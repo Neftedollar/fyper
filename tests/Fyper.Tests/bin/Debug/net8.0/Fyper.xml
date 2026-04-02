@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>Fyper</name></assembly>
+<members>
+<member name="T:Fyper.CypherNameAttribute">
+<summary>
+ Attribute to override the default Cypher property name for a record field.
+</summary>
+</member>
+<member name="T:Fyper.LabelAttribute">
+<summary>
+ Attribute to override the default node label or relationship type name.
+</summary>
+</member>
+<member name="M:Fyper.IGraphDriver.ExecuteWriteAsync(System.String,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Object})">
+<summary>
+ Execute a write query. Returns the count of affected entities.
+</summary>
+</member>
+<member name="M:Fyper.IGraphDriver.ExecuteReadAsync(System.String,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Object})">
+<summary>
+ Execute a read query. Returns a list of result records.
+</summary>
+</member>
+<member name="T:Fyper.IGraphDriver">
+<summary>
+ Abstract graph database driver.
+ Each backend (Neo4j, AGE, etc.) implements this interface.
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.Where``1(Fyper.Ast.CypherQuery{``0},Microsoft.FSharp.Core.FSharpFunc{``0,System.Boolean})">
+<summary>
+ WHERE predicate
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.Skip``1(Fyper.Ast.CypherQuery{``0},System.Int32)">
+<summary>
+ SKIP n
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.Select``2(Fyper.Ast.CypherQuery{``0},Microsoft.FSharp.Core.FSharpFunc{``0,``1})">
+<summary>
+ SELECT projection (maps to Cypher RETURN)
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.OrderByDescending``2(Fyper.Ast.CypherQuery{``0},Microsoft.FSharp.Core.FSharpFunc{``0,``1})">
+<summary>
+ ORDER BY expression (descending)
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.OrderBy``2(Fyper.Ast.CypherQuery{``0},Microsoft.FSharp.Core.FSharpFunc{``0,``1})">
+<summary>
+ ORDER BY expression (ascending)
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.MatchRel``4(Fyper.Ast.CypherQuery{``0},Fyper.Operators.EdgePattern{``1,``2,``3})">
+<summary>
+ MATCH relationship pattern via match&apos;
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.Limit``1(Fyper.Ast.CypherQuery{``0},System.Int32)">
+<summary>
+ LIMIT n
+</summary>
+</member>
+<member name="M:Fyper.CypherBuilder.For``2(Fyper.Operators.NodeSource{``0},Microsoft.FSharp.Core.FSharpFunc{``0,Fyper.Ast.CypherQuery{``1}})">
+<summary>
+ for p in node&lt;Person&gt; do → MATCH (p:Person)
+</summary>
+</member>
+<member name="T:Fyper.CypherBuilder">
+<summary>
+ The Cypher computation expression builder.
+ Uses the Quote member for auto-quotation — all expressions inside
+ `cypher { ... }` are captured as expression trees, not evaluated.
+</summary>
+</member>
+<member name="M:Fyper.Schema.toCypherName(System.String)">
+<summary>
+ PascalCase → camelCase: &quot;FirstName&quot; → &quot;firstName&quot;, &quot;Age&quot; → &quot;age&quot;
+</summary>
+</member>
+<member name="T:Fyper.Ast.CypherQuery`1">
+<summary>
+ A complete Cypher query with phantom result type
+</summary>
+</member>
+<member name="T:Fyper.Ast.Clause">
+<summary>
+ Cypher clauses — each becomes one line in the generated query
+</summary>
+</member>
+<member name="T:Fyper.Ast.RemoveItem">
+<summary>
+ Items in REMOVE clause
+</summary>
+</member>
+<member name="T:Fyper.Ast.SetItem">
+<summary>
+ Items in SET clause
+</summary>
+</member>
+<member name="T:Fyper.Ast.ReturnItem">
+<summary>
+ Items in RETURN / WITH
+</summary>
+</member>
+<member name="T:Fyper.Ast.SortDirection">
+<summary>
+ Sort direction
+</summary>
+</member>
+<member name="T:Fyper.Ast.UnaryOp">
+<summary>
+ Unary operators
+</summary>
+</member>
+<member name="T:Fyper.Ast.BinOp">
+<summary>
+ Binary operators
+</summary>
+</member>
+<member name="T:Fyper.Ast.Expr">
+<summary>
+ Cypher expression (used in WHERE, RETURN, SET, etc.)
+</summary>
+</member>
+<member name="T:Fyper.Ast.Pattern">
+<summary>
+ Pattern — represents a graph pattern in MATCH/CREATE/MERGE
+</summary>
+</member>
+<member name="T:Fyper.Ast.PathLength">
+<summary>
+ Variable-length path specification
+</summary>
+</member>
+<member name="T:Fyper.Ast.Direction">
+<summary>
+ Direction of a relationship in a pattern
+</summary>
+</member>
+<member name="T:Fyper.Ast.Query">
+<summary>
+ Query builder helpers (raw AST API)
+</summary>
+</member>
+<member name="T:Fyper.GraphValue.GraphRecord">
+<summary>
+ A row of query results
+</summary>
+</member>
+<member name="T:Fyper.GraphValue.GraphValue">
+<summary>
+ Universal representation of values returned from any Cypher database.
+ All drivers normalize their results into this type before result mapping.
+</summary>
+</member>
+<member name="T:Fyper.ExprCompiler.ExprCompileState">
+<summary>
+ Mutable compilation state: collects parameters as it encounters literals.
+</summary>
+</member>
+<member name="M:Fyper.ExprCompiler.compile(Fyper.ExprCompiler.ExprCompileState,Microsoft.FSharp.Quotations.FSharpExpr)">
+<summary>
+ Compile an F# quotation Expr into a Cypher AST Expr.
+</summary>
+</member>
+<member name="T:Fyper.CypherCompiler.CompileResult">
+<summary>
+ Result of compiling a CypherQuery
+</summary>
+</member>
+<member name="T:Fyper.CypherCompiler">
+<summary>
+ Compiles Cypher AST (DU) to Cypher query strings with parameterization.
+</summary>
+</member>
+<member name="T:Fyper.Operators.EdgePattern`3">
+<summary>
+ Complete edge pattern: from -[edge&lt;R&gt;]-&gt; to
+</summary>
+</member>
+<member name="T:Fyper.Operators.PartialEdge`2">
+<summary>
+ Partial edge pattern: from -[edge&lt;R&gt;]-&gt; ???
+</summary>
+</member>
+<member name="T:Fyper.Operators.NodeSource`1">
+<summary>
+ Source type for `for ... in ... do` node bindings in the CE
+</summary>
+</member>
+<member name="T:Fyper.Operators.EdgeType`1">
+<summary>
+ Phantom type for edge/relationship type reference
+</summary>
+</member>
+<member name="M:Fyper.Operators.optionalNode``1">
+<summary>
+ Create a typed node source for OPTIONAL MATCH
+</summary>
+</member>
+<member name="M:Fyper.Operators.node``1">
+<summary>
+ Create a typed node source for MATCH
+</summary>
+</member>
+<member name="M:Fyper.Operators.edge``1">
+<summary>
+ Create a typed edge reference for use in match&apos; patterns
+</summary>
+</member>
+<member name="T:Fyper.Operators">
+<summary>
+ Phantom types and operators for use inside the cypher { } computation expression.
+ These operators exist ONLY for type-checking and quotation capture.
+ They throw at runtime — they are never called, only captured as expression trees.
+</summary>
+</member>
+<member name="T:Fyper.QueryTranslator.TranslateState">
+<summary>
+ Internal build state accumulated during translation
+</summary>
+</member>
+<member name="P:Fyper.CypherBuilderInstance.cypher">
+<summary>
+ The global cypher computation expression builder
+</summary>
+</member>
+<member name="M:Fyper.ResultMapper.mapGraphRecord``1(Fyper.GraphValue.GraphRecord)">
+<summary>
+ Map a full GraphRecord to a typed result
+</summary>
+</member>
+<member name="M:Fyper.ResultMapper.mapRecord(System.Type,Fyper.GraphValue.GraphValue)">
+<summary>
+ Map a GraphValue (GMap or GNode) to an F# record type
+</summary>
+</member>
+<member name="M:Fyper.ResultMapper.convertValue(System.Type,Fyper.GraphValue.GraphValue)">
+<summary>
+ Convert a GraphValue to a CLR value of the expected type
+</summary>
+</member>
+<member name="T:Fyper.ResultMapper">
+<summary>
+ Maps GraphRecord results to typed F# values.
+</summary>
+</member>
+<member name="M:Fyper.Cypher.toDebugString``1(Fyper.Ast.CypherQuery{``0})">
+<summary>
+ Compile a query to Cypher string for debugging/logging
+</summary>
+</member>
+<member name="M:Fyper.Cypher.rawAsync(Fyper.IGraphDriver,System.String,Microsoft.FSharp.Collections.FSharpMap{System.String,System.Object})">
+<summary>
+ Execute raw Cypher (escape hatch)
+</summary>
+</member>
+<member name="M:Fyper.Cypher.executeWriteAsync``1(Fyper.IGraphDriver,Fyper.Ast.CypherQuery{``0})">
+<summary>
+ Execute a write query and return the count of affected entities
+</summary>
+</member>
+<member name="M:Fyper.Cypher.executeAsync``1(Fyper.IGraphDriver,Fyper.Ast.CypherQuery{``0})">
+<summary>
+ Execute a read query and return typed results
+</summary>
+</member>
+<member name="T:Fyper.Cypher">
+<summary>
+ Public API for executing Cypher queries.
+</summary>
+</member>
+</members>
+</doc>
