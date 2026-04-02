@@ -114,6 +114,30 @@ module ExprCompiler =
             when mi.Name = "EndsWith" && mi.DeclaringType = typeof<string> ->
             BinOp(compile state instance, EndsWith, compile state arg)
 
+        // ─── Cypher aggregate/scalar functions (defined in Operators module) ───
+        | Microsoft.FSharp.Quotations.Patterns.Call(None, mi, [])
+            when mi.Name = "count" && mi.DeclaringType.Name = "Operators" ->
+            FuncCall("count", [Variable "*"])
+
+        | Microsoft.FSharp.Quotations.Patterns.Call(None, mi, [arg])
+            when (mi.Name = "countDistinct" || mi.Name = "collect" || mi.Name = "sum"
+                  || mi.Name = "avg" || mi.Name = "size")
+                 && mi.DeclaringType.Name = "Operators" ->
+            FuncCall(mi.Name, [compile state arg])
+
+        | Microsoft.FSharp.Quotations.Patterns.Call(None, mi, [arg])
+            when mi.Name = "cypherMin" && mi.DeclaringType.Name = "Operators" ->
+            FuncCall("min", [compile state arg])
+
+        | Microsoft.FSharp.Quotations.Patterns.Call(None, mi, [arg])
+            when mi.Name = "cypherMax" && mi.DeclaringType.Name = "Operators" ->
+            FuncCall("max", [compile state arg])
+
+        // CASE WHEN: caseWhen condition result elseResult
+        | Microsoft.FSharp.Quotations.Patterns.Call(None, mi, [cond; result; elseResult])
+            when mi.Name = "caseWhen" && mi.DeclaringType.Name = "Operators" ->
+            CaseExpr(None, [(compile state cond, compile state result)], Some (compile state elseResult))
+
         // Variable reference
         | Microsoft.FSharp.Quotations.Patterns.Var v -> Variable v.Name
 

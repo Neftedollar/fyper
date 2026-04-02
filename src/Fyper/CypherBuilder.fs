@@ -67,6 +67,60 @@ type CypherBuilder() =
     member _.MatchRel(_source: CypherQuery<'T>, _pattern: EdgePattern<'A, 'R, 'B>) : CypherQuery<'T> =
         failwith "quotation only"
 
+    // ─── Mutation operations ───
+
+    /// DELETE variable(s)
+    [<CustomOperation("delete", MaintainsVariableSpace = true)>]
+    member _.Delete(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// DETACH DELETE variable(s)
+    [<CustomOperation("detachDelete", MaintainsVariableSpace = true)>]
+    member _.DetachDelete(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// CREATE node or relationship pattern
+    [<CustomOperation("create", MaintainsVariableSpace = true)>]
+    member _.Create(_source: CypherQuery<'T>, _pattern: 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// SET properties via record update expression: set (fun p -> { p with Age = 51 })
+    [<CustomOperation("set", MaintainsVariableSpace = true)>]
+    member _.Set(_source: CypherQuery<'T>, _updater: 'T -> 'T) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// MERGE node pattern
+    [<CustomOperation("merge", MaintainsVariableSpace = true)>]
+    member _.Merge(_source: CypherQuery<'T>, _pattern: 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// ON MATCH SET — modifies the last MERGE clause
+    [<CustomOperation("onMatch", MaintainsVariableSpace = true)>]
+    member _.OnMatch(_source: CypherQuery<'T>, [<ProjectionParameter>] _updater: 'T -> 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// ON CREATE SET — modifies the last MERGE clause
+    [<CustomOperation("onCreate", MaintainsVariableSpace = true)>]
+    member _.OnCreate(_source: CypherQuery<'T>, [<ProjectionParameter>] _updater: 'T -> 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    // ─── Advanced operations ───
+
+    /// RETURN DISTINCT projection
+    [<CustomOperation("selectDistinct", AllowIntoPattern = true)>]
+    member _.SelectDistinct(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'R) : CypherQuery<'R> =
+        failwith "quotation only"
+
+    /// UNWIND expression AS alias
+    [<CustomOperation("unwind", MaintainsVariableSpace = true)>]
+    member _.Unwind(_source: CypherQuery<'T>, _expr: 'V list, _alias: string) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// WITH clause for query chaining
+    [<CustomOperation("withClause", AllowIntoPattern = true)>]
+    member _.WithClause(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'R) : CypherQuery<'R> =
+        failwith "quotation only"
+
 [<AutoOpen>]
 module CypherBuilderInstance =
     /// The global cypher computation expression builder

@@ -4,7 +4,19 @@
     <TargetFramework>net10.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Fyper</RootNamespace>
+    <PackageId>Fyper</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Roman Melnikov</Authors>
+    <Description>Type-safe Cypher query builder for F#. Write graph database queries using computation expressions with compile-time safety, parameterized values, and multi-backend support (Neo4j, Apache AGE).</Description>
+    <PackageTags>fsharp;cypher;neo4j;graph-database;orm;query-builder;apache-age</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Schema.fs" />

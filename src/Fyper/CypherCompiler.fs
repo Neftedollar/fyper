@@ -228,6 +228,62 @@ module CypherCompiler =
 
     // ─── Full query compilation ───
 
+    // ─── Capability validation ───
+
+    let validateCapabilities (backend: string) (caps: DriverCapabilities) (clauses: Clause list) : unit =
+        for clause in clauses do
+            match clause with
+            | Match(_, true) when not caps.SupportsOptionalMatch ->
+                raise (FyperUnsupportedFeatureException("OPTIONAL MATCH", backend))
+            | Merge _ when not caps.SupportsMerge ->
+                raise (FyperUnsupportedFeatureException("MERGE", backend))
+            | Unwind _ when not caps.SupportsUnwind ->
+                raise (FyperUnsupportedFeatureException("UNWIND", backend))
+            | Call _ when not caps.SupportsCallProcedure ->
+                raise (FyperUnsupportedFeatureException("CALL procedure", backend))
+            | _ -> ()
+        // Check expressions for CASE and EXISTS subquery
+        let rec checkExpr (expr: Expr) =
+            match expr with
+            | CaseExpr _ when not caps.SupportsCase ->
+                raise (FyperUnsupportedFeatureException("CASE expression", backend))
+            | ExistsSubquery _ when not caps.SupportsExistsSubquery ->
+                raise (FyperUnsupportedFeatureException("EXISTS subquery", backend))
+            | BinOp(l, _, r) -> checkExpr l; checkExpr r
+            | UnaryOp(_, inner) -> checkExpr inner
+            | FuncCall(_, args) -> args |> List.iter checkExpr
+            | ListExpr items -> items |> List.iter checkExpr
+            | MapExpr entries -> entries |> List.iter (snd >> checkExpr)
+            | CaseExpr(s, whens, e) ->
+                s |> Option.iter checkExpr
+                whens |> List.iter (fun (c, r) -> checkExpr c; checkExpr r)
+                e |> Option.iter checkExpr
+            | ExistsSubquery cls -> cls |> List.iter (fun c -> checkClauseExprs c)
+            | _ -> ()
+        and checkClauseExprs (clause: Clause) =
+            match clause with
+            | Where expr -> checkExpr expr
+            | Return(items, _) | With(items, _) -> items |> List.iter (fun i -> checkExpr i.Expr)
+            | OrderBy items -> items |> List.iter (fun (e, _) -> checkExpr e)
+            | Set items -> items |> List.iter (fun i -> match i with SetProperty(_, _, v) -> checkExpr v | SetAllProperties(_, v) | MergeProperties(_, v) -> checkExpr v | _ -> ())
+            | _ -> ()
+        // Check patterns for named paths
+        let rec checkPattern (p: Pattern) =
+            match p with
+            | NamedPath _ when not caps.SupportsNamedPaths ->
+                raise (FyperUnsupportedFeatureException("Named paths", backend))
+            | NamedPath(_, inner) -> checkPattern inner
+            | RelPattern(from, _, _, _, _, _, to') -> checkPattern from; checkPattern to'
+            | _ -> ()
+        for clause in clauses do
+            checkClauseExprs clause
+            match clause with
+            | Match(patterns, _) | Create patterns -> patterns |> List.iter checkPattern
+            | Merge(pattern, _, _) -> checkPattern pattern
+            | _ -> ()
+
+    // ─── Full query compilation ───
+
     let compile (query: CypherQuery<'T>) : CompileResult =
         let cypher =
             query.Clauses

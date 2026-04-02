@@ -4,32 +4,29 @@
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <RootNamespace>Fyper.Tests</RootNamespace>
+    <RootNamespace>Fyper.Integration.Tests</RootNamespace>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="SchemaTests.fs" />
-    <Compile Include="CompilerTests.fs" />
-    <Compile Include="ExprCompilerTests.fs" />
-    <Compile Include="DslTests.fs" />
-    <Compile Include="PropertyTests.fs" />
-    <Compile Include="DriverTests.fs" />
-    <Compile Include="MutationTests.fs" />
-    <Compile Include="AdvancedTests.fs" />
-    <Compile Include="CapabilityTests.fs" />
+    <Compile Include="Neo4jTests.fs" />
+    <Compile Include="AgeTests.fs" />
+    <Compile Include="CrossBackendTests.fs" />
+    <Compile Include="ErrorHandlingTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Expecto" Version="10.*" />
-    <PackageReference Include="Expecto.FsCheck" Version="10.*" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.14.*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <PackageReference Include="Testcontainers.Neo4j" Version="4.*" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../../src/Fyper/Fyper.fsproj" />
+    <ProjectReference Include="../../src/Fyper.Neo4j/Fyper.Neo4j.fsproj" />
+    <ProjectReference Include="../../src/Fyper.Age/Fyper.Age.fsproj" />
   </ItemGroup>
 
 </Project>

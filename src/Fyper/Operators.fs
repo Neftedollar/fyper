@@ -54,3 +54,15 @@ module Operators =
 
     let size (x: 'T) : int64 =
         failwith "quotation only"
+
+    let cypherMin (x: 'T) : 'T =
+        failwith "quotation only"
+
+    let cypherMax (x: 'T) : 'T =
+        failwith "quotation only"
+
+    // ─── CASE expression builder (quotation-only) ───
+
+    /// Build a CASE WHEN expression. Returns the matched value.
+    let caseWhen (condition: bool) (result: 'T) (elseResult: 'T) : 'T =
+        failwith "quotation only"

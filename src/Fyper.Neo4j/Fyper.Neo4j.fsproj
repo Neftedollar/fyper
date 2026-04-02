@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>Fyper.Neo4j</RootNamespace>
+    <PackageId>Fyper.Neo4j</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Roman Melnikov</Authors>
+    <Description>Neo4j Bolt driver for Fyper — the type-safe F# Cypher query builder. Connects Fyper queries to Neo4j databases via the official Neo4j.Driver.</Description>
+    <PackageTags>fsharp;cypher;neo4j;graph-database;bolt</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Neo4jDriver.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo4j.Driver" Version="5.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Fyper/Fyper.fsproj" />
+  </ItemGroup>
+
+</Project>
