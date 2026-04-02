@@ -3,10 +3,12 @@
     <Project Path="src/Fyper/Fyper.fsproj" />
     <Project Path="src/Fyper.Neo4j/Fyper.Neo4j.fsproj" />
     <Project Path="src/Fyper.Age/Fyper.Age.fsproj" />
+    <Project Path="src/Fyper.Parser/Fyper.Parser.fsproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Fyper.Tests/Fyper.Tests.fsproj" />
     <Project Path="tests/Fyper.Integration.Tests/Fyper.Integration.Tests.fsproj" />
+    <Project Path="tests/Fyper.Benchmarks/Fyper.Benchmarks.fsproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Fyper.Sample/Fyper.Sample.fsproj" />

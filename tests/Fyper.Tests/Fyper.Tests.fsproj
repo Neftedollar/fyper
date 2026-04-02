@@ -18,6 +18,7 @@
     <Compile Include="MutationTests.fs" />
     <Compile Include="AdvancedTests.fs" />
     <Compile Include="DesignDocTests.fs" />
+    <Compile Include="ParserTests.fs" />
     <Compile Include="CapabilityTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -31,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/Fyper/Fyper.fsproj" />
+    <ProjectReference Include="../../src/Fyper.Parser/Fyper.Parser.fsproj" />
   </ItemGroup>
 
 </Project>
