@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/Fyper/Fyper.fsproj" />
+    <ProjectReference Include="../../src/Fyper.Parser/Fyper.Parser.fsproj" />
   </ItemGroup>
 
 </Project>
