@@ -9,8 +9,10 @@ type ParserState = {
     mutable Pos: int
 }
 
-/// Cypher parser — recursive descent, zero dependencies.
-/// Parses Cypher query strings into Fyper's typed AST.
+/// <summary>Cypher parser — recursive descent, zero external dependencies.
+/// Parses Cypher query strings into Fyper's typed AST (CypherQuery, Clause, Expr, Pattern).
+/// Supports the full Cypher clause set: MATCH, OPTIONAL MATCH, WHERE, RETURN, WITH,
+/// CREATE, MERGE, DELETE, SET, REMOVE, ORDER BY, SKIP, LIMIT, UNWIND, UNION, CALL.</summary>
 module CypherParser =
 
     // ─── State helpers ───
@@ -609,7 +611,10 @@ module CypherParser =
 
     // ─── Public API ───
 
-    /// Parse a Cypher query string into a CypherQuery AST.
+    /// <summary>Parse a Cypher query string into a typed CypherQuery AST.</summary>
+    /// <param name="cypher">Cypher query string (e.g., "MATCH (n:Person) WHERE n.age > 30 RETURN n").</param>
+    /// <returns>CypherQuery with parsed clauses and discovered parameter names.</returns>
+    /// <exception cref="System.Exception">Thrown on syntax errors with position info.</exception>
     let parse (cypher: string) : CypherQuery<obj> =
         let tokens = Lexer.tokenize cypher
         let state = create tokens
@@ -642,7 +647,9 @@ module CypherParser =
         clauses |> List.iter collectClauseParams
         { Clauses = clauses; Parameters = parameters }
 
-    /// Parse Cypher and return clauses only
+    /// <summary>Parse Cypher and return only the clause list (no parameter collection).</summary>
+    /// <param name="cypher">Cypher query string.</param>
+    /// <returns>List of parsed Clause values.</returns>
     let parseClauses' (cypher: string) : Clause list =
         let tokens = Lexer.tokenize cypher
         let state = create tokens

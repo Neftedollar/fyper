@@ -21,7 +21,9 @@ type CypherNameAttribute(name: string) =
 
 module Schema =
 
-    /// PascalCase → camelCase: "FirstName" → "firstName", "Age" → "age"
+    /// <summary>Convert PascalCase F# name to camelCase Cypher property name.</summary>
+    /// <param name="name">F# record field name (e.g., "FirstName").</param>
+    /// <returns>camelCase Cypher name (e.g., "firstName").</returns>
     let toCypherName (name: string) : string =
         if String.IsNullOrEmpty name then name
         else string (Char.ToLowerInvariant name.[0]) + name.[1..]
@@ -75,7 +77,9 @@ module Schema =
             }
         )
 
-    /// PascalCase → UPPER_SNAKE_CASE: "ActedIn" → "ACTED_IN", "PartOf" → "PART_OF"
+    /// <summary>Convert PascalCase F# type name to UPPER_SNAKE_CASE Cypher relationship type.</summary>
+    /// <param name="name">F# type name (e.g., "ActedIn").</param>
+    /// <returns>UPPER_SNAKE_CASE relationship type (e.g., "ACTED_IN").</returns>
     let toRelType (name: string) : string =
         if String.IsNullOrEmpty name then name
         else

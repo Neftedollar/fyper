@@ -227,7 +227,9 @@ module Lexer =
             advance state
             IDENTIFIER (string c)
 
-    /// Tokenize an entire Cypher string
+    /// <summary>Tokenize an entire Cypher string into a list of tokens.</summary>
+    /// <param name="input">Cypher query string.</param>
+    /// <returns>List of tokens (keywords, identifiers, literals, operators). Newlines are stripped.</returns>
     let tokenize (input: string) : Token list =
         let state = create input
         let tokens = ResizeArray<Token>()

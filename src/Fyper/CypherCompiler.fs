@@ -2,12 +2,14 @@ namespace Fyper
 
 open Fyper.Ast
 
-/// Compiles Cypher AST (DU) to Cypher query strings with parameterization.
+/// <summary>Compiles Cypher AST (discriminated unions) to parameterized Cypher query strings.</summary>
 module CypherCompiler =
 
-    /// Result of compiling a CypherQuery
+    /// <summary>Result of compiling a CypherQuery — the Cypher string and collected parameters.</summary>
     type CompileResult = {
+        /// The compiled Cypher query string with $param references.
         Cypher: string
+        /// Parameter values keyed by name (p0, p1, etc.).
         Parameters: Map<string, obj>
     }
 
