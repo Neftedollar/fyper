@@ -1,8 +1,14 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Fyper/Fyper.fsproj" />
+    <Project Path="src/Fyper.Neo4j/Fyper.Neo4j.fsproj" />
+    <Project Path="src/Fyper.Age/Fyper.Age.fsproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Fyper.Tests/Fyper.Tests.fsproj" />
+    <Project Path="tests/Fyper.Integration.Tests/Fyper.Integration.Tests.fsproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Fyper.Sample/Fyper.Sample.fsproj" />
   </Folder>
 </Solution>

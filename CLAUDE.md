@@ -55,4 +55,11 @@ F# requires strict top-down ordering. Dependencies flow downward:
 
 ## Target
 
-- .NET 8.0, F# 8, latest language version
+- .NET 10.0, F# 8, latest language version
+
+## Active Technologies
+- F# 8, .NET 10.0 (net10.0), latest language version (001-fyper-full-orm)
+- Neo4j (Bolt protocol), PostgreSQL + Apache AGE extension (001-fyper-full-orm)
+
+## Recent Changes
+- 001-fyper-full-orm: Added F# 8, .NET 10.0 (net10.0), latest language version
