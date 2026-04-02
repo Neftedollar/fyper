@@ -11,3 +11,4 @@ packages/
 Thumbs.db
 *.tmp
 *.swp
+nupkg/

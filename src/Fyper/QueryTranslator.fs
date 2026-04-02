@@ -21,8 +21,22 @@ module QueryTranslator =
             ParamCounter = 0
         }
 
+    /// Unwrap Lambda/Let to get to the inner expression body
+    let rec private unwrapLambda (expr: Microsoft.FSharp.Quotations.Expr) : Microsoft.FSharp.Quotations.Expr =
+        match expr with
+        | QP.Lambda(_, body) -> unwrapLambda body
+        | QP.Let(_, _, body) -> unwrapLambda body
+        | _ -> expr
+
     let private isMethodNamed (name: string) (mi: System.Reflection.MethodInfo) =
         mi.Name = name && mi.DeclaringType.Name = "CypherBuilder"
+
+    /// Check if a node source expression is optionalNode<T> (for OPTIONAL MATCH)
+    let private isOptionalNodeSource (expr: Microsoft.FSharp.Quotations.Expr) : bool =
+        match expr with
+        | QP.PropertyGet(None, pi, []) when pi.Name = "optionalNode" -> true
+        | QP.Call(None, mi, _) when mi.Name = "optionalNode" -> true
+        | _ -> false
 
     /// Resolve the user-visible alias from a For lambda.
     /// CE desugars `for p in source do body` to `For(source, fun _argN -> let p = _argN in body)`
@@ -39,12 +53,13 @@ module QueryTranslator =
         // For(builder, nodeSource, fun _arg -> let p = _arg in body) → MATCH (p:Label)
         // F# CE desugars `for p in source do` to `For(source, fun _argN -> let p = _argN in body)`
         // We need the user's name (p), not the internal name (_argN).
-        | QP.Call(Some _builder, mi, [_nodeSource; QP.Lambda(var, body)]) when isMethodNamed "For" mi ->
+        | QP.Call(Some _builder, mi, [nodeSource; QP.Lambda(var, body)]) when isMethodNamed "For" mi ->
             let nodeType = var.Type
             let label = Schema.resolveLabel nodeType
-            // Find the user-visible alias: look for Let(userVar, Var(var), ...) in the body
             let alias, actualBody = resolveForAlias var body
-            let matchClause = Match([NodePattern(alias, Some label, Map.empty)], false)
+            // Detect optionalNode<T> vs node<T> — check if the source calls "optionalNode"
+            let isOptional = isOptionalNodeSource nodeSource
+            let matchClause = Match([NodePattern(alias, Some label, Map.empty)], isOptional)
             let state' = {
                 state with
                     Clauses = state.Clauses @ [matchClause]
@@ -103,10 +118,10 @@ module QueryTranslator =
                 Parameters = state'.Parameters |> Map.add paramName n
                 ParamCounter = state'.ParamCounter + 1 }
 
-        // MatchRel(builder, source, edgePatternExpr)
-        | QP.Call(Some _builder, mi, [source; patternExpr]) when isMethodNamed "MatchRel" mi ->
+        // MatchRel(builder, source, projectionLambda) — with ProjectionParameter
+        | QP.Call(Some _builder, mi, [source; patternLambda]) when isMethodNamed "MatchRel" mi ->
             let state' = walkExpr state source
-            let relPattern = compileEdgePattern patternExpr state'.VarTypes
+            let relPattern = compileEdgePattern patternLambda state'.VarTypes
             { state' with Clauses = state'.Clauses @ [Match([relPattern], false)] }
 
         // ─── Mutation operations ───
@@ -420,24 +435,52 @@ module QueryTranslator =
         | _ -> false
 
     and compileEdgePattern (expr: Microsoft.FSharp.Quotations.Expr) (varTypes: Map<string, System.Type>) : Pattern =
-        let rec findVars (e: Microsoft.FSharp.Quotations.Expr) : (string * System.Type) list =
+        // Strategy: find all Var references (the from/to nodes) and
+        // find any generic type argument that resolves to a relationship type.
+        let rec findVars (e: Microsoft.FSharp.Quotations.Expr) : string list =
             match e with
-            | QP.Var v -> [(v.Name, v.Type)]
+            | QP.Var v -> [v.Name]
             | QP.Call(_, _, args) -> args |> List.collect findVars
+            | QP.Let(_, _, body) -> findVars body
+            | QP.Lambda(_, body) -> findVars body
             | _ -> []
 
-        let vars = findVars expr
+        let rec findRelType (e: Microsoft.FSharp.Quotations.Expr) : string option =
+            match e with
+            | QP.Call(_, mi, args) ->
+                // Check this method's generic args for a relationship type
+                let fromMethod =
+                    if mi.IsGenericMethod then
+                        mi.GetGenericArguments()
+                        |> Array.tryPick (fun t ->
+                            // A relationship type is a record type that is NOT in varTypes (not a node)
+                            if Microsoft.FSharp.Reflection.FSharpType.IsRecord t
+                               && not (varTypes |> Map.exists (fun _ vt -> vt = t)) then
+                                Some (Schema.toRelType (Schema.resolveLabel t))
+                            else None)
+                    else None
+                match fromMethod with
+                | Some _ -> fromMethod
+                | None -> args |> List.tryPick findRelType
+            | QP.Let(_, value, body) ->
+                findRelType value |> Option.orElseWith (fun () -> findRelType body)
+            | QP.Lambda(_, body) -> findRelType body
+            | _ -> None
+
+        let vars = findVars expr |> List.distinct
+        let relType = findRelType expr
+
         match vars with
-        | [(fromName, fromType); (toName, toType)] ->
-            let fromLabel = Schema.resolveLabel fromType
-            let toLabel = Schema.resolveLabel toType
+        | [fromName; toName] | [_; fromName; toName] ->
+            let fromLabel = varTypes |> Map.tryFind fromName |> Option.map Schema.resolveLabel
+            let toLabel = varTypes |> Map.tryFind toName |> Option.map Schema.resolveLabel
             RelPattern(
-                NodePattern(fromName, Some fromLabel, Map.empty),
-                None, None, Map.empty,
+                NodePattern(fromName, fromLabel, Map.empty),
+                None, relType, Map.empty,
                 Outgoing, None,
-                NodePattern(toName, Some toLabel, Map.empty))
+                NodePattern(toName, toLabel, Map.empty))
         | _ ->
-            failwithf "Could not parse edge pattern expression: %A" expr
+            failwithf "Could not parse edge pattern expression: found vars %A" vars
 
     let translate<'T> (quotedCe: Microsoft.FSharp.Quotations.Expr<CypherQuery<'T>>) : CypherQuery<'T> =
         let state = TranslateState.empty

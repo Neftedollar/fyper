@@ -75,4 +75,16 @@ module Schema =
             }
         )
 
+    /// PascalCase → UPPER_SNAKE_CASE: "ActedIn" → "ACTED_IN", "PartOf" → "PART_OF"
+    let toRelType (name: string) : string =
+        if String.IsNullOrEmpty name then name
+        else
+            let sb = System.Text.StringBuilder()
+            for i in 0 .. name.Length - 1 do
+                let c = name.[i]
+                if i > 0 && Char.IsUpper c && (i + 1 < name.Length && Char.IsLower name.[i + 1] || Char.IsLower name.[i - 1]) then
+                    sb.Append('_') |> ignore
+                sb.Append(Char.ToUpperInvariant c) |> ignore
+            sb.ToString()
+
     let getMetaOf<'T> () : TypeMeta = getMeta typeof<'T>

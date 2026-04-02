@@ -62,9 +62,9 @@ type CypherBuilder() =
     member _.Limit(_source: CypherQuery<'T>, _count: int) : CypherQuery<'T> =
         failwith "quotation only"
 
-    /// MATCH relationship pattern via match'
+    /// MATCH relationship pattern: matchRel (p -< edge<ActedIn> >- m)
     [<CustomOperation("matchRel", MaintainsVariableSpace = true)>]
-    member _.MatchRel(_source: CypherQuery<'T>, _pattern: EdgePattern<'A, 'R, 'B>) : CypherQuery<'T> =
+    member _.MatchRel(_source: CypherQuery<'T>, [<ProjectionParameter>] _pattern: 'T -> EdgePattern<'A, 'R, 'B>) : CypherQuery<'T> =
         failwith "quotation only"
 
     // ─── Mutation operations ───

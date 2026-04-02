@@ -17,6 +17,7 @@
     <Compile Include="DriverTests.fs" />
     <Compile Include="MutationTests.fs" />
     <Compile Include="AdvancedTests.fs" />
+    <Compile Include="DesignDocTests.fs" />
     <Compile Include="CapabilityTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
