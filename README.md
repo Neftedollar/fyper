@@ -1,5 +1,9 @@
 # Fyper
 
+[![CI](https://github.com/Neftedollar/fyper/actions/workflows/ci.yml/badge.svg)](https://github.com/Neftedollar/fyper/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/Fyper.svg)](https://www.nuget.org/packages/Fyper)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Type-safe Cypher queries in F#. Plain records as schema, computation expressions as queries, parameterized by default.
 
 ```fsharp

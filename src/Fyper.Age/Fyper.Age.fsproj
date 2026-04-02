@@ -5,12 +5,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Fyper.Age</RootNamespace>
     <PackageId>Fyper.Age</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Roman Melnikov</Authors>
     <Description>Apache AGE (PostgreSQL) driver for Fyper — the type-safe F# Cypher query builder. Run Fyper queries against PostgreSQL with the AGE graph extension.</Description>
     <PackageTags>fsharp;cypher;apache-age;postgresql;graph-database</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet: ['10.0.x']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+
+      - name: Restore
+        run: |
+          dotnet restore src/Fyper/Fyper.fsproj
+          dotnet restore src/Fyper.Parser/Fyper.Parser.fsproj
+          dotnet restore src/Fyper.Neo4j/Fyper.Neo4j.fsproj
+          dotnet restore src/Fyper.Age/Fyper.Age.fsproj
+          dotnet restore tests/Fyper.Tests/Fyper.Tests.fsproj
+
+      - name: Build
+        run: |
+          dotnet build src/Fyper/Fyper.fsproj -c Release --no-restore
+          dotnet build src/Fyper.Parser/Fyper.Parser.fsproj -c Release --no-restore
+          dotnet build src/Fyper.Neo4j/Fyper.Neo4j.fsproj -c Release --no-restore
+          dotnet build src/Fyper.Age/Fyper.Age.fsproj -c Release --no-restore
+
+      - name: Test
+        run: dotnet test tests/Fyper.Tests/Fyper.Tests.fsproj -c Release --no-restore --verbosity normal
+
+      - name: Run sample
+        run: dotnet run --project samples/Fyper.Sample/Fyper.Sample.fsproj -c Release
+
+      - name: Pack
+        run: |
+          dotnet pack src/Fyper/Fyper.fsproj -c Release --no-build -o nupkg
+          dotnet pack src/Fyper.Parser/Fyper.Parser.fsproj -c Release --no-build -o nupkg
+          dotnet pack src/Fyper.Neo4j/Fyper.Neo4j.fsproj -c Release --no-build -o nupkg
+          dotnet pack src/Fyper.Age/Fyper.Age.fsproj -c Release --no-build -o nupkg
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: nupkg/*.nupkg
