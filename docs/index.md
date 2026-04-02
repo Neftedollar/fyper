@@ -6,53 +6,58 @@ nav_order: 1
 
 # Fyper
 
-Type-safe Cypher queries in F#. Plain records as schema, computation expressions as queries, parameterized by default.
+Type-safe Cypher queries in F#.
 
 ```fsharp
 type Person = { Name: string; Age: int }
+type ActedIn = { Roles: string list }
 
-let adults = cypher {
+let findActors = cypher {
     for p in node<Person> do
-    where (p.Age >= 18)
-    orderBy p.Name
-    select p
+    for m in node<Movie> do
+    matchRel (p -- edge<ActedIn> --> m)
+    where (p.Age > 30)
+    select (p.Name, m.Title)
 }
-// MATCH (p:Person) WHERE p.age >= $p0 ORDER BY p.name RETURN p
+// MATCH (p:Person) MATCH (m:Movie) MATCH (p)-[:ACTED_IN]->(m)
+// WHERE p.age > $p0 RETURN p.name, m.title
 ```
 
-## Features
-
-- **Zero boilerplate schema** -- F# records are your graph schema
-- **Compile-time safety** -- quotation-based CE catches errors before runtime
-- **Parameterized by default** -- all values become `$p0`, `$p1`
-- **Multi-backend** -- Neo4j and Apache AGE from the same query
-- **Zero dependencies** -- core library needs only FSharp.Core
-- **Cypher parser** -- parse Cypher strings back into typed AST
-- **Fast** -- sub-microsecond compilation
-
-## Quick Install
+## Install
 
 ```bash
-dotnet add package Fyper
-dotnet add package Fyper.Neo4j    # or Fyper.Age
+dotnet add package Fyper              # Core
+dotnet add package Fyper.Neo4j        # Neo4j driver
+dotnet add package Fyper.Age          # Apache AGE driver
+dotnet add package Fyper.Parser       # Cypher parser
 ```
 
-## Documentation
+## Guide
 
-- [Getting Started](getting-started.md) -- first query in 5 minutes
-- [CE Reference](ce-reference.md) -- all computation expression operations
-- [Relationships](relationships.md) -- matchRel, matchPath, createRel
-- [Mutations](mutations.md) -- CREATE, SET, DELETE, MERGE
-- [Parser](parser.md) -- parse Cypher strings into AST
-- [Drivers](drivers.md) -- Neo4j and Apache AGE setup
-- [Architecture](architecture.md) -- internal design and data flow
-- [Performance](performance.md) -- benchmarks
+- [Getting Started](guide/getting-started.md) -- first query in 5 minutes
+- [Relationships](guide/relationships.md) -- matchRel, OPTIONAL MATCH, paths
+- [Mutations](guide/mutations.md) -- CREATE, SET, DELETE, MERGE
+- [Transactions](guide/transactions.md) -- atomic multi-query operations
+- [Parser](guide/parser.md) -- parse Cypher strings into AST
+
+## Reference
+
+- [CE Operations](reference/ce-operations.md) -- all operations at a glance
+- [Functions](reference/functions.md) -- Cypher module API
+- [Types](reference/types.md) -- AST, GraphValue, exceptions
+- [Neo4j Driver](reference/neo4j.md) -- setup and usage
+- [AGE Driver](reference/age.md) -- PostgreSQL + AGE setup
+
+## Internals
+
+- [Architecture](internals/architecture.md) -- data flow and modules
+- [Performance](internals/performance.md) -- benchmarks
 
 ## Packages
 
-| Package | Description | Dependencies |
-|---------|-------------|--------------|
-| `Fyper` | Core query builder + compiler | FSharp.Core only |
-| `Fyper.Parser` | Cypher string parser | Fyper only |
-| `Fyper.Neo4j` | Neo4j Bolt driver | Neo4j.Driver |
-| `Fyper.Age` | Apache AGE driver | Npgsql |
+| Package | Deps | Description |
+|---------|------|-------------|
+| `Fyper` | FSharp.Core | Query builder + compiler |
+| `Fyper.Parser` | Fyper | Cypher string parser |
+| `Fyper.Neo4j` | Neo4j.Driver | Neo4j Bolt driver |
+| `Fyper.Age` | Npgsql | Apache AGE driver |

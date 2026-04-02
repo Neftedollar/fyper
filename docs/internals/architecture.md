@@ -1,4 +1,11 @@
-# Fyper Architecture
+---
+layout: default
+title: Architecture
+parent: Internals
+nav_order: 1
+---
+
+# Architecture
 
 Fyper is a typed Cypher query builder for F#. It uses computation expressions, F# quotations, and discriminated unions to produce compile-time safe graph database queries that work against Neo4j and Apache AGE backends.
 

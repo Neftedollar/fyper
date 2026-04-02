@@ -1,5 +1,12 @@
 # Fyper — Design Document
 
+> **Note**: This is the original design document from project inception. Some syntax has evolved during implementation:
+> - `match'` is now `matchRel`
+> - `p -[edge<ActedIn>]-> m` is now `p -- edge<ActedIn> --> m`
+> - `Query.match'` is now `Query.matchNodes`
+>
+> See [CE Operations](reference/ce-operations.md) for current syntax.
+
 F# ORM / typed query builder for Cypher-based graph databases (Neo4j, Apache AGE, Memgraph).
 
 ## 1. Goals

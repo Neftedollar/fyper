@@ -1,4 +1,11 @@
-# Fyper.Parser Documentation
+---
+layout: default
+title: Parser
+parent: Guide
+nav_order: 6
+---
+
+# Cypher Parser
 
 The `Fyper.Parser` package provides a zero-external-dependency Cypher parser that converts Cypher query strings into Fyper's typed AST (`Fyper.Ast`). This enables round-tripping (parse Cypher string -> manipulate AST -> compile back to string), query analysis, validation, and transformation workflows.
 
