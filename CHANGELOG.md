@@ -10,10 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added (since 0.1.0)
 
 - **matchRel preserves CE variable space** — `where`, `orderBy`, `select` work after `matchRel`
-- **Relationship type extraction** — `matchRel (p -< edge<ActedIn> >- m)` produces `[:ACTED_IN]`
+- **Relationship type extraction** — `matchRel (p -- edge<ActedIn> --> m)` produces `[:ACTED_IN]`
 - **OPTIONAL MATCH** — `for m in optionalNode<Movie> do` produces `OPTIONAL MATCH`
-- **Variable-length paths** — `matchPath (p -< edge<Knows> >- q) (Between(1, 5))` produces `*1..5`
-- **CREATE relationship** — `createRel (p -< edge<ActedIn> >- m)` creates relationship between existing nodes
+- **Variable-length paths** — `matchPath (p -- edge<Knows> --> q) (Between(1, 5))` produces `*1..5`
+- **CREATE relationship** — `createRel (p -- edge<ActedIn> --> m)` creates relationship between existing nodes
 - **Anonymous records in select** — `select {| Age = p.Age; Count = count() |}` works
 - **Schema.toRelType** — PascalCase → UPPER_SNAKE_CASE conversion for relationship types
 - **198 tests** (up from 164) including comprehensive design doc coverage
