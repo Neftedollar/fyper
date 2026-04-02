@@ -1,15 +1,81 @@
+# ─── Build artifacts ───
 bin/
 obj/
 *.user
 *.suo
 packages/
+nupkg/
+BenchmarkDotNet.Artifacts/
+TestResults/
+
+# ─── IDE ───
 .vs/
 .vscode/
 .idea/
 *.DotSettings.user
+*.sln.DotSettings
+
+# ─── OS ───
 .DS_Store
 Thumbs.db
 *.tmp
 *.swp
-nupkg/
-BenchmarkDotNet.Artifacts/
+*~
+
+# ─── AI coding tools ───
+# Claude Code
+.claude/
+
+# Cursor
+.cursor/
+.cursorignore
+.cursorindexingignore
+
+# GitHub Copilot
+.copilot/
+.github/copilot-instructions.md
+
+# OpenAI Codex CLI
+.codex/
+
+# Aider
+.aider*
+.aider.tags.cache.v3/
+
+# Continue.dev
+.continue/
+
+# Codeium / Windsurf
+.codeium/
+.windsurf/
+
+# Tabnine
+.tabnine/
+
+# CodeRabbit
+.coderabbit.yaml
+
+# Sourcegraph Cody
+.cody/
+
+# Amazon Q / CodeWhisperer
+.aws/amazonq/
+
+# JetBrains AI
+.junie/
+
+# Qodo (formerly CodiumAI)
+.qodo/
+
+# Specify / SpecKit
+.specify/
+
+# Augment Code
+.augment/
+
+# Supermaven
+.supermaven/
+
+# Generic AI context files (keep CLAUDE.md — it's project instructions)
+.ai/
+.llm/
