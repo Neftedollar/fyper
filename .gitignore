@@ -12,3 +12,4 @@ Thumbs.db
 *.tmp
 *.swp
 nupkg/
+BenchmarkDotNet.Artifacts/

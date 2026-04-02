@@ -190,24 +190,43 @@ Override conventions when needed:
 type Person = { Name: string; [<CypherName "birth_year">] BirthYear: int }
 ```
 
+## Cypher Parser
+
+Parse Cypher strings back into the typed AST — useful for query analysis, transformation, and validation. Zero dependencies beyond `Fyper` core.
+
+```fsharp
+open Fyper.Parser
+
+let parsed = CypherParser.parse "MATCH (p:Person)-[:ACTED_IN]->(m:Movie) WHERE p.age > 30 RETURN p.name, m.title"
+// parsed.Clauses = [Match(...); Where(...); Return(...)]
+
+// Roundtrip: parse → compile
+let compiled = Fyper.CypherCompiler.compile parsed
+printfn "%s" compiled.Cypher
+```
+
 ## Project Structure
 
 | Package | Description | Dependencies |
 |---------|-------------|--------------|
 | `Fyper` | Core query builder + compiler | FSharp.Core only |
+| `Fyper.Parser` | Cypher string parser | Fyper only |
 | `Fyper.Neo4j` | Neo4j Bolt driver | Neo4j.Driver |
 | `Fyper.Age` | Apache AGE driver | Npgsql |
 
 ## Development
 
 ```bash
-# Run unit + property-based tests
+# Run unit + property-based tests (239 tests)
 dotnet test tests/Fyper.Tests/
 
 # Run integration tests (requires Docker)
 docker compose up -d
 dotnet test tests/Fyper.Integration.Tests/
 docker compose down
+
+# Run benchmarks
+dotnet run --project tests/Fyper.Benchmarks/ -c Release
 
 # Run sample app
 dotnet run --project samples/Fyper.Sample/
