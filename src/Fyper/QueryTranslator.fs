@@ -371,10 +371,10 @@ module QueryTranslator =
             let alias = string (System.Char.ToLowerInvariant label.[0])
             NodePattern(alias, Some label, props)
 
-        // Edge pattern via operators: p -< edge<R> >- m
-        // Quotation tree: Call(None, ">-", [Call(None, "-<", [Var p; edge<R>]); Var m])
+        // Edge pattern via operators: p -- edge<R> --> m  (or old: p -< edge<R> >- m)
+        // Quotation tree: Call(None, "-->", [Call(None, "--", [Var p; edge<R>]); Var m])
         | QP.Call(None, mi, [QP.Call(None, mi2, [fromExpr; _edgeExpr]); toExpr])
-            when mi.Name = "op_GreaterSubtract" || mi.Name = ">-" ->
+            when mi.Name = "op_GreaterSubtract" || mi.Name = "op_MinusMinusGreater" ->
             let fromPattern = compileCreatePattern exprState fromExpr varTypes
             let toPattern = compileCreatePattern exprState toExpr varTypes
             // Extract relationship type from edge<R> generic argument

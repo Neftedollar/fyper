@@ -49,17 +49,17 @@ limit 5                          // LIMIT $limit_1
 ## Relationships
 
 ```fsharp
-matchRel (p -< edge<ActedIn> >- m)                    // MATCH (p)-[:ACTED_IN]->(m)
-matchPath (p -< edge<Knows> >- q) (Between(1, 5))     // MATCH (p)-[:KNOWS*1..5]->(q)
-matchPath (p -< edge<Knows> >- q) AnyLength            // MATCH (p)-[:KNOWS*]->(q)
-matchPath (p -< edge<Knows> >- q) (Exactly 3)          // MATCH (p)-[:KNOWS*3]->(q)
+matchRel (p -- edge<ActedIn> --> m)                    // MATCH (p)-[:ACTED_IN]->(m)
+matchPath (p -- edge<Knows> --> q) (Between(1, 5))     // MATCH (p)-[:KNOWS*1..5]->(q)
+matchPath (p -- edge<Knows> --> q) AnyLength            // MATCH (p)-[:KNOWS*]->(q)
+matchPath (p -- edge<Knows> --> q) (Exactly 3)          // MATCH (p)-[:KNOWS*3]->(q)
 ```
 
 ## Mutations
 
 ```fsharp
 create { Name = "Tom"; Age = 50 }                       // CREATE (:Person {name: $p0, age: $p1})
-createRel (p -< edge<ActedIn> >- m)                     // CREATE (p)-[:ACTED_IN]->(m)
+createRel (p -- edge<ActedIn> --> m)                     // CREATE (p)-[:ACTED_IN]->(m)
 set (fun p -> { p with Age = p.Age + 1 })               // SET p.age = (p.age + $p0)
 set (fun p -> { p with Age = 51 })                      // SET p.age = $p0
 delete p                                                 // DELETE p

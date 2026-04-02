@@ -7,11 +7,10 @@ namespace Fyper
 module Operators =
 
     /// Phantom type representing a graph relationship type reference.
-    /// Used inside cypher { } CE with the -&lt; and &gt;- operators.
     type EdgeType<'R> = | EdgeType
 
-    /// <summary>Create a typed edge reference for use in relationship patterns.</summary>
-    /// <example>matchRel (p -&lt; edge&lt;ActedIn&gt; &gt;- m)</example>
+    /// <summary>Create a typed edge/relationship reference.</summary>
+    /// <example>matchRel (p -- edge&lt;ActedIn&gt; --> m)</example>
     let edge<'R> : EdgeType<'R> = EdgeType
 
     /// Source type for <c>for ... in ... do</c> node bindings in the CE.
@@ -25,21 +24,34 @@ module Operators =
     /// <example>for m in optionalNode&lt;Movie&gt; do</example>
     let optionalNode<'T> : NodeSource<'T> = NodeSource
 
-    /// Intermediate type for partial edge patterns: <c>from -&lt; edge&lt;R&gt;</c>
+    /// Intermediate type for partial edge patterns: <c>from -- edge&lt;R&gt;</c>
     type PartialEdge<'A, 'R> = { __phantom: unit }
 
-    /// Complete edge pattern: <c>from -&lt; edge&lt;R&gt; &gt;- to</c>
+    /// Complete edge pattern: <c>from -- edge&lt;R&gt; --> to</c>
     type EdgePattern<'A, 'R, 'B> = { __phantom: unit }
 
-    // ─── Outgoing operators: a -< edge<R> >- b ───
+    // ─── Relationship operators ───
+    // Cypher: (p)-[:ACTED_IN]->(m)
+    // Fyper:   p -- edge<ActedIn> --> m
 
-    /// <summary>Left edge operator. Combines a node with an edge type.</summary>
-    /// <remarks>Only valid inside cypher { } computation expression. Throws at runtime.</remarks>
+    /// <summary>Left part of relationship pattern. Connects node to edge type.</summary>
+    /// <remarks>Only valid inside cypher { } CE. Throws at runtime.</remarks>
+    /// <example>p -- edge&lt;ActedIn&gt;</example>
+    let ( -- ) (a: 'A) (r: EdgeType<'R>) : PartialEdge<'A, 'R> =
+        failwith "This operator is only valid inside a cypher { } computation expression"
+
+    /// <summary>Outgoing arrow. Completes relationship pattern with target node.</summary>
+    /// <remarks>Only valid inside cypher { } CE. Throws at runtime.</remarks>
+    /// <example>p -- edge&lt;ActedIn&gt; --> m</example>
+    let ( --> ) (partial: PartialEdge<'A, 'R>) (b: 'B) : EdgePattern<'A, 'R, 'B> =
+        failwith "This operator is only valid inside a cypher { } computation expression"
+
+    // Keep old operators as aliases for backwards compatibility
+    /// Alias for <c>--</c> (backwards compatibility).
     let ( -< ) (a: 'A) (r: EdgeType<'R>) : PartialEdge<'A, 'R> =
         failwith "This operator is only valid inside a cypher { } computation expression"
 
-    /// <summary>Right edge operator. Completes an edge pattern with the target node.</summary>
-    /// <remarks>Only valid inside cypher { } computation expression. Throws at runtime.</remarks>
+    /// Alias for <c>--></c> (backwards compatibility).
     let ( >- ) (partial: PartialEdge<'A, 'R>) (b: 'B) : EdgePattern<'A, 'R, 'B> =
         failwith "This operator is only valid inside a cypher { } computation expression"
 

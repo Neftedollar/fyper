@@ -25,7 +25,7 @@ let query = cypher {
     for p in node<Person> do
     for m in node<Movie> do
     where (p.Name = "Tom" && m.Title = "The Matrix")
-    createRel (p -< edge<ActedIn> >- m)
+    createRel (p -- edge<ActedIn> --> m)
 }
 // CREATE (p)-[:ACTED_IN]->(m)
 ```

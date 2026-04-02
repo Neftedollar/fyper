@@ -18,7 +18,7 @@ type ActedIn = { Roles: string list }
 let query = cypher {
     for p in node<Person> do
     for m in node<Movie> do
-    matchRel (p -< edge<ActedIn> >- m)
+    matchRel (p -- edge<ActedIn> --> m)
     where (p.Age > 30)
     select (p.Name, m.Title)
 }
@@ -37,7 +37,7 @@ Use `optionalNode<T>` to produce OPTIONAL MATCH. Results may be null when no mat
 let query = cypher {
     for p in node<Person> do
     for m in optionalNode<Movie> do
-    matchRel (p -< edge<ActedIn> >- m)
+    matchRel (p -- edge<ActedIn> --> m)
     select (p, m)
 }
 // MATCH (p:Person) OPTIONAL MATCH (m:Movie)
@@ -53,7 +53,7 @@ Use `matchPath` with a `PathLength` specifier for traversals:
 let query = cypher {
     for p in node<Person> do
     for q in node<Person> do
-    matchPath (p -< edge<Knows> >- q) (Between(1, 5))
+    matchPath (p -- edge<Knows> --> q) (Between(1, 5))
     select (p.Name, q.Name)
 }
 // MATCH (p)-[:KNOWS*1..5]->(q)
@@ -75,7 +75,7 @@ let query = cypher {
     for p in node<Person> do
     for m in node<Movie> do
     where (p.Name = "Tom")
-    createRel (p -< edge<ActedIn> >- m)
+    createRel (p -- edge<ActedIn> --> m)
 }
 // MATCH (p:Person) MATCH (m:Movie)
 // WHERE p.name = $p0

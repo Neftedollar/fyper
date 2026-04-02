@@ -135,7 +135,7 @@ Generates a `MATCH` clause with a relationship pattern using the `-<` and `>-` o
 
 ```fsharp
 // MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
-matchRel (p -< edge<ActedIn> >- m)
+matchRel (p -- edge<ActedIn> --> m)
 ```
 
 **Signature**: `MatchRel : CypherQuery<'T> * ('T -> EdgePattern<'A, 'R, 'B>) -> CypherQuery<'T>`
@@ -146,13 +146,13 @@ Generates a `MATCH` clause with a variable-length path.
 
 ```fsharp
 // MATCH (p:Person)-[:KNOWS*1..5]->(other:Person)
-matchPath (p -< edge<Knows> >- other) (Between(1, 5))
+matchPath (p -- edge<Knows> --> other) (Between(1, 5))
 
 // MATCH (p:Person)-[:KNOWS*]->(other:Person)
-matchPath (p -< edge<Knows> >- other) AnyLength
+matchPath (p -- edge<Knows> --> other) AnyLength
 
 // MATCH (p:Person)-[:KNOWS*3]->(other:Person)
-matchPath (p -< edge<Knows> >- other) (Exactly 3)
+matchPath (p -- edge<Knows> --> other) (Exactly 3)
 ```
 
 **Signature**: `MatchPath : CypherQuery<'T> * ('T -> EdgePattern<'A, 'R, 'B>) * PathLength -> CypherQuery<'T>`
@@ -185,7 +185,7 @@ Generates a `CREATE` clause for a relationship between existing CE variables.
 
 ```fsharp
 // CREATE (p)-[:ACTED_IN]->(m)
-createRel (p -< edge<ActedIn> >- m)
+createRel (p -- edge<ActedIn> --> m)
 ```
 
 **Signature**: `CreateRel : CypherQuery<'T> * ('T -> EdgePattern<'A, 'R, 'B>) -> CypherQuery<'T>`
@@ -392,7 +392,7 @@ val ( -< ) : 'A -> EdgeType<'R> -> PartialEdge<'A, 'R>
 val ( >- ) : PartialEdge<'A, 'R> -> 'B -> EdgePattern<'A, 'R, 'B>
 ```
 
-Used together: `p -< edge<ActedIn> >- m` constructs a typed edge pattern. The relationship type name is derived from `'R` using `Schema.toRelType` (PascalCase to UPPER_SNAKE_CASE).
+Used together: `p -- edge<ActedIn> --> m` constructs a typed edge pattern. The relationship type name is derived from `'R` using `Schema.toRelType` (PascalCase to UPPER_SNAKE_CASE).
 
 ### Aggregate Functions
 

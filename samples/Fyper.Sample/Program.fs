@@ -226,7 +226,7 @@ let relationships () =
     cypher {
         for p in node<Person> do
         for m in node<Movie> do
-        matchRel (p -< edge<ActedIn> >- m)
+        matchRel (p -- edge<ActedIn> --> m)
         select (p.Name, m.Title)
     }
     |> print "Match relationship (ActedIn → ACTED_IN)"
@@ -239,7 +239,7 @@ let relationships () =
     cypher {
         for p in node<Person> do
         for m in node<Movie> do
-        matchRel (p -< edge<ActedIn> >- m)
+        matchRel (p -- edge<ActedIn> --> m)
         where (p.Age > 30 && m.Released >= 2000)
         orderBy m.Released
         select (p.Name, m.Title)
@@ -268,7 +268,7 @@ let relationships () =
     cypher {
         for p in node<Person> do
         for q in node<Person> do
-        matchPath (p -< edge<Knows> >- q) (Between(1, 5))
+        matchPath (p -- edge<Knows> --> q) (Between(1, 5))
         select (p.Name, q.Name)
     }
     |> print "Variable-length path *1..5"
@@ -281,7 +281,7 @@ let relationships () =
     cypher {
         for p in node<Person> do
         for q in node<Person> do
-        matchPath (p -< edge<Knows> >- q) AnyLength
+        matchPath (p -- edge<Knows> --> q) AnyLength
         select q
     }
     |> print "Any-length path *"
@@ -294,7 +294,7 @@ let relationships () =
     cypher {
         for p in node<Person> do
         for q in node<Person> do
-        matchPath (p -< edge<Knows> >- q) (Exactly 3)
+        matchPath (p -- edge<Knows> --> q) (Exactly 3)
         select q
     }
     |> print "Exactly 3 hops"
@@ -325,7 +325,7 @@ let mutations () =
         for p in node<Person> do
         for m in node<Movie> do
         where (p.Name = "Tom")
-        createRel (p -< edge<ActedIn> >- m)
+        createRel (p -- edge<ActedIn> --> m)
     }
     |> print "CREATE relationship"
     // MATCH (p:Person)

@@ -134,7 +134,7 @@ The `Task` returned by `CloseAsync()` is discarded. If the close fails, the erro
 
 - **The CE API is excellent.** `cypher { for p in node<Person> do ... }` is intuitive and discoverable.
 - **`Quote` member for auto-quotation** eliminates the need for explicit `<@ @>` brackets -- a significant ergonomic win.
-- **Operator overloading for edge patterns** (`p -< edge<ActedIn> >- m`) is creative and readable.
+- **Operator overloading for edge patterns** (`p -- edge<ActedIn> --> m`) is creative and readable.
 - **`toCypher` for debugging** is essential and well-placed.
 - **Dual API**: CE for typical use, raw `Query.empty |> ...` for advanced users.
 - **`optionalNode<T>`** for OPTIONAL MATCH is elegant.

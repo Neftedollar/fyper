@@ -48,7 +48,7 @@ let designDocQueryTests = testList "Design Doc: Queries" [
         let query = cypher {
             for p in node<Person> do
             for m in node<Movie> do
-            matchRel (p -< edge<ActedIn> >- m)
+            matchRel (p -- edge<ActedIn> --> m)
             where (p.Age > 30)
             orderBy m.Released
             select (p.Name, m.Title)
@@ -213,7 +213,7 @@ let designDocMutationTests = testList "Design Doc: Mutations" [
             for p in node<Person> do
             for m in node<Movie> do
             where (p.Name = "Tom")
-            createRel (p -< edge<ActedIn> >- m)
+            createRel (p -- edge<ActedIn> --> m)
         }
         let c, _ = Cypher.toCypher query
         Expect.stringContains c "CREATE" "create"
@@ -296,7 +296,7 @@ let designDocAdvancedTests = testList "Design Doc: Advanced" [
         let query = cypher {
             for p in node<Person> do
             for q in node<Person> do
-            matchPath (p -< edge<ActedIn> >- q) (Between(1, 5))
+            matchPath (p -- edge<ActedIn> --> q) (Between(1, 5))
             select (p, q)
         }
         let c, _ = Cypher.toCypher query
@@ -308,7 +308,7 @@ let designDocAdvancedTests = testList "Design Doc: Advanced" [
         let query = cypher {
             for p in node<Person> do
             for q in node<Person> do
-            matchPath (p -< edge<ActedIn> >- q) AnyLength
+            matchPath (p -- edge<ActedIn> --> q) AnyLength
             select (p, q)
         }
         let c, _ = Cypher.toCypher query
@@ -355,7 +355,7 @@ let designDocAdvancedTests = testList "Design Doc: Advanced" [
         let query = cypher {
             for p in node<Person> do
             for m in optionalNode<Movie> do
-            matchRel (p -< edge<ActedIn> >- m)
+            matchRel (p -- edge<ActedIn> --> m)
             select (p, m)
         }
         let c, _ = Cypher.toCypher query

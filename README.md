@@ -10,7 +10,7 @@ type ActedIn = { Roles: string list }
 let findActors = cypher {
     for p in node<Person> do
     for m in node<Movie> do
-    matchRel (p -< edge<ActedIn> >- m)
+    matchRel (p -- edge<ActedIn> --> m)
     where (p.Age > 30)
     orderBy m.Released
     select (p.Name, m.Title)
@@ -57,7 +57,7 @@ open Fyper
 let findActors = cypher {
     for p in node<Person> do
     for m in node<Movie> do
-    matchRel (p -< edge<ActedIn> >- m)
+    matchRel (p -- edge<ActedIn> --> m)
     where (p.Age > 30 && m.Released >= 2000)
     orderBy m.Released
     select (p.Name, m.Title)
@@ -114,7 +114,7 @@ task {
 let q = cypher {
     for p in node<Person> do
     for m in node<Movie> do
-    matchRel (p -< edge<ActedIn> >- m)
+    matchRel (p -- edge<ActedIn> --> m)
     select (p.Name, m.Title)
 }
 
@@ -122,7 +122,7 @@ let q = cypher {
 let q = cypher {
     for p in node<Person> do
     for m in optionalNode<Movie> do
-    matchRel (p -< edge<ActedIn> >- m)
+    matchRel (p -- edge<ActedIn> --> m)
     select (p, m)
 }
 
@@ -130,7 +130,7 @@ let q = cypher {
 let q = cypher {
     for p in node<Person> do
     for q in node<Person> do
-    matchPath (p -< edge<ActedIn> >- q) (Between(1, 5))
+    matchPath (p -- edge<ActedIn> --> q) (Between(1, 5))
     select (p, q)
 }
 // -> MATCH (p)-[:ACTED_IN*1..5]->(q)
@@ -140,7 +140,7 @@ let q = cypher {
     for p in node<Person> do
     for m in node<Movie> do
     where (p.Name = "Tom")
-    createRel (p -< edge<ActedIn> >- m)
+    createRel (p -- edge<ActedIn> --> m)
 }
 ```
 
