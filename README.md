@@ -307,6 +307,16 @@ Benchmarked on Apple M1 Pro, .NET 10.0:
 
 Run benchmarks: `dotnet run --project tests/Fyper.Benchmarks/ -c Release`
 
+## Known Issues & Limitations
+
+- **No incoming arrow operator** -- F# operator precedence makes `<--` ambiguous. For incoming relationships, swap the order: `matchRel (m -- edge<ActedIn> --> p)` produces `(m)-[:ACTED_IN]->(p)`.
+- **No edge properties in CE** -- `edge<ActedIn>` carries only the type, not property values. For relationship properties, use the raw AST API.
+- **REMOVE not in CE** -- use `Cypher.rawAsync` or raw AST for `REMOVE` operations.
+- **CALL procedure not in CE** -- supported by the parser and AST, but no CE operation yet.
+- **EXISTS subquery not in CE** -- supported in parser and AST only.
+- **AGE dialect limitations** -- Apache AGE does not support OPTIONAL MATCH, MERGE, UNWIND, CASE. Fyper rejects these at query construction time.
+- **Multi-field SET** -- `set (fun p -> { p with Name = "X"; Age = 30 })` changes both fields. Only the changed fields generate SET clauses, but both changes are in one SET (no separate SET per field).
+
 ## Project Structure
 
 | Package | Description | Dependencies |

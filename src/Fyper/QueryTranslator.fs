@@ -508,8 +508,20 @@ module QueryTranslator =
             | QP.Lambda(_, body) -> findRelType body
             | _ -> None
 
+        let rec findDirection (e: Microsoft.FSharp.Quotations.Expr) : Direction =
+            match e with
+            | QP.Call(_, mi, _) when mi.Name = "op_LessThanMinusMinus" -> Incoming  // <--
+            | QP.Call(_, mi, args) ->
+                match mi.Name with
+                | "op_MinusMinusGreater" -> Outgoing  // -->
+                | _ -> args |> List.tryPick (fun a -> match findDirection a with Outgoing -> None | d -> Some d) |> Option.defaultValue Outgoing
+            | QP.Let(_, _, body) -> findDirection body
+            | QP.Lambda(_, body) -> findDirection body
+            | _ -> Outgoing
+
         let vars = findVars expr |> List.distinct
         let relType = findRelType expr
+        let direction = findDirection expr
 
         match vars with
         | [fromName; toName] | [_; fromName; toName] ->
@@ -518,7 +530,7 @@ module QueryTranslator =
             RelPattern(
                 NodePattern(fromName, fromLabel, Map.empty),
                 None, relType, Map.empty,
-                Outgoing, None,
+                direction, None,
                 NodePattern(toName, toLabel, Map.empty))
         | _ ->
             failwithf "Could not parse edge pattern expression: found vars %A" vars

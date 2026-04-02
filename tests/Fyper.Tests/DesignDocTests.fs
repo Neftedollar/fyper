@@ -130,6 +130,18 @@ let designDocQueryTests = testList "Design Doc: Queries" [
         Expect.stringContains c "title" "m.title"
     }
 
+    test "incoming relationship — reverse order with -->" {
+        // For incoming: swap the order. m --> p means (p)<-[:R]-(m)
+        let query = cypher {
+            for p in node<Person> do
+            for m in node<Movie> do
+            matchRel (m -- edge<ActedIn> --> p)
+            select (p.Name, m.Title)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "ACTED_IN" "relationship type"
+    }
+
     test "optionalNode produces OPTIONAL MATCH" {
         let query = cypher {
             for p in node<Person> do

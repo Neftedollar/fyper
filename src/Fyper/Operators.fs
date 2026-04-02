@@ -46,6 +46,12 @@ module Operators =
     let ( --> ) (partial: PartialEdge<'A, 'R>) (b: 'B) : EdgePattern<'A, 'R, 'B> =
         failwith "This operator is only valid inside a cypher { } computation expression"
 
+    /// <summary>Incoming arrow. Completes relationship pattern with source node.</summary>
+    /// <remarks>Only valid inside cypher { } CE. Throws at runtime.</remarks>
+    /// <example>p &lt;-- edge&lt;ActedIn&gt; -- m</example>
+    let ( <-- ) (partial: PartialEdge<'A, 'R>) (b: 'B) : EdgePattern<'A, 'R, 'B> =
+        failwith "This operator is only valid inside a cypher { } computation expression"
+
     // Keep old operators as aliases for backwards compatibility
     /// Alias for <c>--</c> (backwards compatibility).
     let ( -< ) (a: 'A) (r: EdgeType<'R>) : PartialEdge<'A, 'R> =

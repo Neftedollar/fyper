@@ -133,7 +133,7 @@ type Neo4jDriver(driver: IDriver) =
                             })
                     return result
                 finally
-                    session.CloseAsync() |> ignore
+                    do! session.CloseAsync()
             }
 
         member _.ExecuteWriteAsync(cypher, parameters) =
@@ -154,7 +154,7 @@ type Neo4jDriver(driver: IDriver) =
                             })
                     return result
                 finally
-                    session.CloseAsync() |> ignore
+                    do! session.CloseAsync()
             }
 
         member _.BeginTransactionAsync() =
