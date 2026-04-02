@@ -256,7 +256,10 @@ module QueryTranslator =
             let state' = walkExpr state first
             walkExpr state' second
 
-        // Fallback
+        // Fallback — pass through CE internal expressions (coerce, combine, etc.)
+        // Fail on unrecognized builder calls to prevent silent data loss
+        | QP.Call(Some _, mi, _) when mi.DeclaringType.Name = "CypherBuilder" ->
+            failwithf "Unsupported cypher CE operation: %s" mi.Name
         | _ -> state
 
     and compilePredicate (exprState: ExprCompiler.ExprCompileState) (lambda: Microsoft.FSharp.Quotations.Expr) : Ast.Expr =
@@ -328,13 +331,6 @@ module QueryTranslator =
 
     /// Update the last MERGE clause in the clause list
     and updateLastMerge (clauses: Clause list) (update: Pattern * SetItem list * SetItem list -> Clause) : Clause list =
-        let rec go (revClauses: Clause list) =
-            match revClauses with
-            | Merge(p, om, oc) :: rest -> (update (p, om, oc)) :: rest |> List.rev
-            | c :: rest -> go rest |> List.rev |> fun r -> r @ [c] |> List.rev
-                           // Actually, simpler approach:
-            | [] -> clauses // No merge found, return unchanged
-        // Find last Merge and update it
         let idx = clauses |> List.tryFindIndexBack (fun c -> match c with Merge _ -> true | _ -> false)
         match idx with
         | Some i ->

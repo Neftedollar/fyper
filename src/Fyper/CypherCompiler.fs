@@ -79,7 +79,7 @@ module CypherCompiler =
 
     and literalToString (v: obj) : string =
         match v with
-        | :? string as s -> sprintf "'%s'" (s.Replace("'", "\\'"))
+        | :? string as s -> sprintf "'%s'" (s.Replace("'", "''"))
         | :? bool as b -> if b then "true" else "false"
         | :? int as i -> string i
         | :? int64 as i -> string i

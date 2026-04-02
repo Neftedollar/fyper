@@ -73,5 +73,6 @@ module Cypher =
                 return result
             with ex ->
                 try do! tx.RollbackAsync() with _ -> ()
-                return raise (System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).SourceException)
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw()
+                return Unchecked.defaultof<'T> // unreachable
         }

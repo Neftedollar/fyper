@@ -1,0 +1,19 @@
+title: Fyper
+description: Type-safe Cypher queries in F#
+baseurl: /fyper
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+  collections: true
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+exclude:
+  - DESIGN.md

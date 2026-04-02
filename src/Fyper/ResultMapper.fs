@@ -62,7 +62,9 @@ module ResultMapper =
                 | Some gv -> convertValue fi.PropertyType gv
                 | None ->
                     if Schema.isOptionType fi.PropertyType then box None
-                    else failwithf "Missing required property '%s' for type '%s'" cypherName recordType.Name
+                    else raise (FyperMappingException(
+                        sprintf "Missing required property '%s' for type '%s'" cypherName recordType.Name,
+                        fi.PropertyType, GNull))
             )
 
         FSharpValue.MakeRecord(recordType, values)
