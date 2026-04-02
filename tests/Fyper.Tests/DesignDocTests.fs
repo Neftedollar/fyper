@@ -208,6 +208,18 @@ let designDocMutationTests = testList "Design Doc: Mutations" [
         Expect.stringContains c "RETURN" "return after set"
     }
 
+    test "create relationship via createRel" {
+        let query = cypher {
+            for p in node<Person> do
+            for m in node<Movie> do
+            where (p.Name = "Tom")
+            createRel (p -< edge<ActedIn> >- m)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "CREATE" "create"
+        Expect.stringContains c "ACTED_IN" (sprintf "relationship type. Got:\n%s" c)
+    }
+
     test "merge with onMatch and onCreate" {
         let query = cypher {
             for p in node<Person> do
@@ -267,6 +279,131 @@ let designDocAdvancedTests = testList "Design Doc: Advanced" [
         Expect.stringContains cypher "MATCH (p:Person)" "match"
         Expect.stringContains cypher "RETURN p" "return"
         Expect.isTrue (pars.Count > 0) "has params"
+    }
+
+    test "anonymous record in select" {
+        let query = cypher {
+            for p in node<Person> do
+            select {| Age = p.Age; Count = count() |}
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "RETURN" "return"
+        Expect.stringContains c "age" "age field"
+        Expect.stringContains c "count(*)" "count"
+    }
+
+    test "variable-length path via matchPath" {
+        let query = cypher {
+            for p in node<Person> do
+            for q in node<Person> do
+            matchPath (p -< edge<ActedIn> >- q) (Between(1, 5))
+            select (p, q)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "*1..5" "path length"
+        Expect.stringContains c "ACTED_IN" "relationship type"
+    }
+
+    test "variable-length path AnyLength" {
+        let query = cypher {
+            for p in node<Person> do
+            for q in node<Person> do
+            matchPath (p -< edge<ActedIn> >- q) AnyLength
+            select (p, q)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "*" "any length star"
+    }
+
+    test "collect in select" {
+        let query = cypher {
+            for p in node<Person> do
+            select (collect(p.Name))
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "collect" "collect"
+    }
+
+    test "sum and avg in select" {
+        let querySum = cypher {
+            for p in node<Person> do
+            select (sum(p.Age))
+        }
+        let queryAvg = cypher {
+            for p in node<Person> do
+            select (avg(p.Age))
+        }
+        let cSum, _ = Cypher.toCypher querySum
+        let cAvg, _ = Cypher.toCypher queryAvg
+        Expect.stringContains cSum "sum" "sum"
+        Expect.stringContains cAvg "avg" "avg"
+    }
+
+    test "caseWhen with property comparison" {
+        let query = cypher {
+            for p in node<Person> do
+            select (caseWhen (p.Age >= 18) p.Name "minor")
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "CASE WHEN" "case when"
+        Expect.stringContains c "THEN" "then"
+        Expect.stringContains c "ELSE" "else"
+        Expect.stringContains c "END" "end"
+    }
+
+    test "optionalNode with matchRel" {
+        let query = cypher {
+            for p in node<Person> do
+            for m in optionalNode<Movie> do
+            matchRel (p -< edge<ActedIn> >- m)
+            select (p, m)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "MATCH (p:Person)" "regular match"
+        Expect.stringContains c "OPTIONAL MATCH (m:Movie)" "optional match"
+        Expect.stringContains c "ACTED_IN" "relationship type"
+    }
+
+    test "multiple where conditions" {
+        let query = cypher {
+            for p in node<Person> do
+            where (p.Age > 18 && p.Name.StartsWith("A"))
+            select p
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "AND" "and"
+        Expect.stringContains c "STARTS WITH" "starts with"
+    }
+
+    test "or condition in where" {
+        let query = cypher {
+            for p in node<Person> do
+            where (p.Age < 18 || p.Age > 65)
+            select p
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "OR" "or"
+    }
+
+    test "equality with string" {
+        let query = cypher {
+            for p in node<Person> do
+            where (p.Name = "Alice")
+            select p
+        }
+        let c, pars = Cypher.toCypher query
+        Expect.stringContains c "= $" "equality parameterized"
+        Expect.isTrue (pars |> Map.exists (fun _ v -> v = box "Alice")) "Alice param"
+    }
+
+    test "EndsWith in where" {
+        let query = cypher {
+            for p in node<Person> do
+            where (p.Name.EndsWith("son"))
+            select p
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "ENDS WITH" "ends with"
     }
 
     test "raw AST API escape hatch" {

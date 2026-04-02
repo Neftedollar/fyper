@@ -67,6 +67,11 @@ type CypherBuilder() =
     member _.MatchRel(_source: CypherQuery<'T>, [<ProjectionParameter>] _pattern: 'T -> EdgePattern<'A, 'R, 'B>) : CypherQuery<'T> =
         failwith "quotation only"
 
+    /// MATCH relationship with variable-length path
+    [<CustomOperation("matchPath", MaintainsVariableSpace = true)>]
+    member _.MatchPath(_source: CypherQuery<'T>, [<ProjectionParameter>] _pattern: 'T -> EdgePattern<'A, 'R, 'B>, _pathLength: PathLength) : CypherQuery<'T> =
+        failwith "quotation only"
+
     // ─── Mutation operations ───
 
     /// DELETE variable(s)
@@ -79,9 +84,14 @@ type CypherBuilder() =
     member _.DetachDelete(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'V) : CypherQuery<'T> =
         failwith "quotation only"
 
-    /// CREATE node or relationship pattern
+    /// CREATE node pattern (from record literal)
     [<CustomOperation("create", MaintainsVariableSpace = true)>]
     member _.Create(_source: CypherQuery<'T>, _pattern: 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// CREATE relationship pattern using existing CE variables
+    [<CustomOperation("createRel", MaintainsVariableSpace = true)>]
+    member _.CreateRel(_source: CypherQuery<'T>, [<ProjectionParameter>] _pattern: 'T -> EdgePattern<'A, 'R, 'B>) : CypherQuery<'T> =
         failwith "quotation only"
 
     /// SET properties via record update expression: set (fun p -> { p with Age = 51 })

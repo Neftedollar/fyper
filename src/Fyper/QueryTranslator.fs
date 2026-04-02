@@ -124,6 +124,19 @@ module QueryTranslator =
             let relPattern = compileEdgePattern patternLambda state'.VarTypes
             { state' with Clauses = state'.Clauses @ [Match([relPattern], false)] }
 
+        // MatchPath(builder, source, projectionLambda, pathLength) — relationship with variable-length path
+        | QP.Call(Some _builder, mi, [source; patternLambda; pathLengthExpr]) when isMethodNamed "MatchPath" mi ->
+            let state' = walkExpr state source
+            let relPattern = compileEdgePattern patternLambda state'.VarTypes
+            // Add pathLength to the RelPattern
+            let pathLength = extractPathLength pathLengthExpr
+            let withPath =
+                match relPattern with
+                | RelPattern(from, alias, relType, props, dir, _, to') ->
+                    RelPattern(from, alias, relType, props, dir, Some pathLength, to')
+                | other -> other
+            { state' with Clauses = state'.Clauses @ [Match([withPath], false)] }
+
         // ─── Mutation operations ───
 
         // Delete(builder, source, selectorLambda) → DELETE alias
@@ -148,6 +161,12 @@ module QueryTranslator =
                 Clauses = state'.Clauses @ [Create [pattern]]
                 Parameters = Map.fold (fun acc k v -> Map.add k v acc) state'.Parameters exprState.Parameters
                 ParamCounter = exprState.ParamIndex }
+
+        // CreateRel(builder, source, projectionLambda) → CREATE relationship pattern
+        | QP.Call(Some _builder, mi, [source; patternLambda]) when isMethodNamed "CreateRel" mi ->
+            let state' = walkExpr state source
+            let relPattern = compileEdgePattern patternLambda state'.VarTypes
+            { state' with Clauses = state'.Clauses @ [Create [relPattern]] }
 
         // Set(builder, source, updaterLambda) → SET property = value
         | QP.Call(Some _builder, mi, [source; updaterLambda]) when isMethodNamed "Set" mi ->
@@ -268,6 +287,17 @@ module QueryTranslator =
         // TupleGet — access item from CE variable-space tuple
         | QP.TupleGet(tupleExpr, _idx) ->
             exprToReturnItems tupleExpr
+
+        // Anonymous record: select {| Age = p.Age; Count = count() |}
+        | QP.NewRecord(recordType, fieldValues) ->
+            let fields = Microsoft.FSharp.Reflection.FSharpType.GetRecordFields(recordType)
+            Array.zip fields (fieldValues |> Array.ofList)
+            |> Array.map (fun (fi, value) ->
+                let exprState = ExprCompiler.newState()
+                let compiled = ExprCompiler.compile exprState value
+                let alias = Schema.toCypherName fi.Name
+                { Expr = compiled; Alias = Some alias })
+            |> Array.toList
 
         // Call to NewTuple via static method (some F# versions)
         | QP.Call(None, mi, args) when mi.Name.StartsWith("MakeTuple") || mi.Name = "NewTuple" ->
@@ -433,6 +463,21 @@ module QueryTranslator =
         // CE variable space: Let(v, TupleGet/Var, PropertyGet(Var v, Name))
         | QP.Let(_, _, body) -> isUnchangedField propName body
         | _ -> false
+
+    /// Extract a PathLength value from a quotation expression
+    and extractPathLength (expr: Microsoft.FSharp.Quotations.Expr) : PathLength =
+        match expr with
+        // Direct union case construction: Between(1, 5), Exactly(3), etc.
+        | QP.NewUnionCase(uci, args) ->
+            match uci.Name, args with
+            | "Exactly", [QP.Value(n, _)] -> Exactly (n :?> int)
+            | "Between", [QP.Value(min, _); QP.Value(max, _)] -> Between(min :?> int, max :?> int)
+            | "AtLeast", [QP.Value(n, _)] -> AtLeast (n :?> int)
+            | "AtMost", [QP.Value(n, _)] -> AtMost (n :?> int)
+            | "AnyLength", [] -> AnyLength
+            | _ -> AnyLength
+        | QP.Let(_, _, body) -> extractPathLength body
+        | _ -> AnyLength
 
     and compileEdgePattern (expr: Microsoft.FSharp.Quotations.Expr) (varTypes: Map<string, System.Type>) : Pattern =
         // Strategy: find all Var references (the from/to nodes) and
