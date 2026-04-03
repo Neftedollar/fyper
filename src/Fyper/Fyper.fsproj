@@ -7,11 +7,11 @@
     <PackageId>Fyper</PackageId>
     <Description>Type-safe Cypher query builder for F#. Write graph database queries using computation expressions with compile-time safety, parameterized values, and multi-backend support (Neo4j, Apache AGE).</Description>
     <PackageTags>fsharp;cypher;neo4j;graph-database;orm;query-builder;apache-age</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>

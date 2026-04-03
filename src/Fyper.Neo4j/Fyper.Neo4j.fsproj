@@ -7,10 +7,15 @@
     <PackageId>Fyper.Neo4j</PackageId>
     <Description>Neo4j Bolt driver for Fyper — the type-safe F# Cypher query builder. Connects Fyper queries to Neo4j databases via the official Neo4j.Driver.</Description>
     <PackageTags>fsharp;cypher;neo4j;graph-database;bolt</PackageTags>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="Neo4jDriver.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>

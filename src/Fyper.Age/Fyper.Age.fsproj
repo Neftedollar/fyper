@@ -7,10 +7,15 @@
     <PackageId>Fyper.Age</PackageId>
     <Description>Apache AGE (PostgreSQL) driver for Fyper — the type-safe F# Cypher query builder. Run Fyper queries against PostgreSQL with the AGE graph extension.</Description>
     <PackageTags>fsharp;cypher;apache-age;postgresql;graph-database</PackageTags>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="AgeDriver.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>

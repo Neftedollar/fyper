@@ -7,11 +7,11 @@
     <PackageId>Fyper.Parser</PackageId>
     <Description>Zero-dependency Cypher query parser for F#. Parses Cypher strings into Fyper's typed AST (discriminated unions). Useful for query analysis, transformation, and validation.</Description>
     <PackageTags>fsharp;cypher;parser;graph-database;neo4j;apache-age</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>
