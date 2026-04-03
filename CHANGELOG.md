@@ -5,6 +5,20 @@ All notable changes to Fyper will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-03
+
+### Added
+
+- **REMOVE property** — `removeProperty p.Email` → `REMOVE p.email`
+- **REMOVE label** — `removeLabel p "Admin"` → `REMOVE p:Admin`
+- **CALL procedure** — `callProc "db.labels" ["label"]` → `CALL db.labels() YIELD label`
+- **CREATE relationship with properties** — `createRelWith (...) { Roles = ["Neo"] }` → `CREATE (p)-[:ACTED_IN {roles: $p0}]->(m)`
+- **EXISTS subquery** — `where (existsRel (p -- edge<R> --> m))` → `WHERE EXISTS { MATCH ... }`
+- **Incoming relationships** — `edgeIn<R>` produces `<-[:R]-` direction
+- **Undirected relationships** — `edgeUn<R>` produces `-[:R]-` direction
+- **F# list literal support** in ExprCompiler — `["a"; "b"]` parameterized correctly
+- 256 tests (up from 250)
+
 ## [1.0.0] - 2026-04-02
 
 ### Added (since 0.1.0)

@@ -82,3 +82,21 @@ All operations available inside `cypher { }`.
 - [Mutations](../guide/mutations.md) -- CREATE, SET, DELETE examples
 - [Functions Reference](functions.md) -- execution and inspection APIs
 - [Types Reference](types.md) -- CypherQuery, AST types
+
+## REMOVE & CALL
+
+| Operation | Cypher | Example |
+|-----------|--------|---------|
+| `removeProperty expr` | `REMOVE owner.prop` | `removeProperty p.Email` |
+| `removeLabel x "L"` | `REMOVE x:L` | `removeLabel p "Admin"` |
+| `callProc "proc" ["y"]` | `CALL proc() YIELD y` | `callProc "db.labels" ["label"]` |
+| `createRelWith (...) rec` | `CREATE (a)-[:R {props}]->(b)` | `createRelWith (p -- edge<ActedIn> --> m) { Roles = ["Neo"] }` |
+| `existsRel pattern` | `EXISTS { MATCH ... }` | `where (existsRel (p -- edge<ActedIn> --> m))` |
+
+## Edge Direction
+
+| Function | Direction | Cypher |
+|----------|-----------|--------|
+| `edge<R>` | Outgoing | `(a)-[:R]->(b)` |
+| `edgeIn<R>` | Incoming | `(a)<-[:R]-(b)` |
+| `edgeUn<R>` | Undirected | `(a)-[:R]-(b)` |

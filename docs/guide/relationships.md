@@ -83,6 +83,32 @@ let query = cypher {
 // CREATE (p)-[:ACTED_IN]->(m)
 ```
 
+## Incoming & Undirected
+
+```fsharp
+// Incoming: (p)<-[:DIRECTED]-(m)
+matchRel (p -- edgeIn<Directed> --> m)
+
+// Undirected: (p)-[:KNOWS]-(q)
+matchRel (p -- edgeUn<Knows> --> q)
+```
+
+`edge<R>` = outgoing (default), `edgeIn<R>` = incoming, `edgeUn<R>` = undirected.
+
+## EXISTS Subquery
+
+Check if a relationship exists in WHERE:
+
+```fsharp
+let q = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    where (existsRel (p -- edge<ActedIn> --> m))
+    select p
+}
+// WHERE EXISTS { MATCH (p)-[]->(m) }
+```
+
 ## Naming Conventions
 
 | F# Type | Cypher Type | Convention |

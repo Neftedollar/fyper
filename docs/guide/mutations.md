@@ -113,6 +113,30 @@ task {
 }
 ```
 
+## CREATE Relationship with Properties
+
+```fsharp
+let query = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    where (p.Name = "Tom")
+    createRelWith (p -- edge<ActedIn> --> m) { Roles = ["Neo"] }
+}
+// CREATE (p)-[:ACTED_IN {roles: $p0}]->(m)
+```
+
+## REMOVE
+
+```fsharp
+// Remove a property
+let q = cypher { for p in node<Person> do; removeProperty p.Name }
+// REMOVE p.name
+
+// Remove a label
+let q = cypher { for p in node<Person> do; removeLabel p "Admin" }
+// REMOVE p:Admin
+```
+
 ## See Also
 
 - [Transactions](transactions.md) -- atomic multi-query operations

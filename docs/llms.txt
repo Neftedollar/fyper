@@ -23,11 +23,15 @@ Fyper is an F# library that lets you write Cypher queries for graph databases us
 
 ## CE Operations
 
-for/where/select/selectDistinct/orderBy/orderByDesc/skip/limit/matchRel/matchPath/create/createRel/set/delete/detachDelete/merge/onMatch/onCreate/unwind/withClause
+for/where/select/selectDistinct/orderBy/orderByDesc/skip/limit/matchRel/matchPath/create/createRel/createRelWith/set/delete/detachDelete/merge/onMatch/onCreate/unwind/withClause/removeProperty/removeLabel/callProc
 
-## Aggregation Functions
+## Edge Direction
 
-count/countDistinct/sum/avg/collect/cypherMin/cypherMax/size/caseWhen
+edge<R> (outgoing) / edgeIn<R> (incoming) / edgeUn<R> (undirected)
+
+## Aggregation & Expression Functions
+
+count/countDistinct/sum/avg/collect/cypherMin/cypherMax/size/caseWhen/existsRel
 
 ## Documentation
 
