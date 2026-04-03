@@ -510,12 +510,21 @@ module QueryTranslator =
 
         let rec findDirection (e: Microsoft.FSharp.Quotations.Expr) : Direction =
             match e with
-            | QP.Call(_, mi, _) when mi.Name = "op_LessThanMinusMinus" -> Incoming  // <--
-            | QP.Call(_, mi, args) ->
-                match mi.Name with
-                | "op_MinusMinusGreater" -> Outgoing  // -->
-                | _ -> args |> List.tryPick (fun a -> match findDirection a with Outgoing -> None | d -> Some d) |> Option.defaultValue Outgoing
-            | QP.Let(_, _, body) -> findDirection body
+            // edgeIn<T> / edgeUn<T> as property or call
+            | QP.PropertyGet(None, pi, []) when pi.Name = "edgeIn" -> Incoming
+            | QP.PropertyGet(None, pi, []) when pi.Name = "edgeUn" -> Undirected
+            | QP.Call(None, mi, _) when mi.Name = "edgeIn" -> Incoming
+            | QP.Call(None, mi, _) when mi.Name = "edgeUn" -> Undirected
+            | QP.Call(_, _, args) ->
+                args |> List.tryPick (fun a ->
+                    match findDirection a with
+                    | Outgoing -> None
+                    | d -> Some d)
+                |> Option.defaultValue Outgoing
+            | QP.Let(_, v, body) ->
+                match findDirection v with
+                | Outgoing -> findDirection body
+                | d -> d
             | QP.Lambda(_, body) -> findDirection body
             | _ -> Outgoing
 

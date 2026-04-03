@@ -10,6 +10,7 @@ open Fyper.CypherCompiler
 
 type Person = { Name: string; Age: int }
 type Movie = { Title: string; Released: int }
+type Knows = { Since: int }
 type ActedIn = { Roles: string list }
 
 [<Tests>]
@@ -130,16 +131,30 @@ let designDocQueryTests = testList "Design Doc: Queries" [
         Expect.stringContains c "title" "m.title"
     }
 
-    test "incoming relationship — reverse order with -->" {
-        // For incoming: swap the order. m --> p means (p)<-[:R]-(m)
+    test "incoming relationship with edgeIn" {
         let query = cypher {
             for p in node<Person> do
             for m in node<Movie> do
-            matchRel (m -- edge<ActedIn> --> p)
+            matchRel (p -- edgeIn<ActedIn> --> m)
             select (p.Name, m.Title)
         }
         let c, _ = Cypher.toCypher query
         Expect.stringContains c "ACTED_IN" "relationship type"
+        Expect.stringContains c "<-[" (sprintf "incoming arrow. Got:\n%s" c)
+    }
+
+    test "undirected relationship with edgeUn" {
+        let query = cypher {
+            for p in node<Person> do
+            for q in node<Person> do
+            matchRel (p -- edgeUn<Knows> --> q)
+            select (p, q)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "KNOWS" "relationship type"
+        // Undirected: no arrow, just -[]-
+        let hasNoArrow = not (c.Contains("->")) || not (c.Contains("<-"))
+        Expect.isTrue (c.Contains("-[") && c.Contains("]-")) "undirected brackets"
     }
 
     test "optionalNode produces OPTIONAL MATCH" {

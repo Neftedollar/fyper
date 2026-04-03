@@ -46,11 +46,13 @@ module Operators =
     let ( --> ) (partial: PartialEdge<'A, 'R>) (b: 'B) : EdgePattern<'A, 'R, 'B> =
         failwith "This operator is only valid inside a cypher { } computation expression"
 
-    /// <summary>Incoming arrow. Completes relationship pattern with source node.</summary>
-    /// <remarks>Only valid inside cypher { } CE. Throws at runtime.</remarks>
-    /// <example>p &lt;-- edge&lt;ActedIn&gt; -- m</example>
-    let ( <-- ) (partial: PartialEdge<'A, 'R>) (b: 'B) : EdgePattern<'A, 'R, 'B> =
-        failwith "This operator is only valid inside a cypher { } computation expression"
+    /// <summary>Create a typed incoming edge reference. Produces &lt;-[:TYPE]- direction.</summary>
+    /// <example>matchRel (p -- edgeIn&lt;Directed&gt; --> m) // MATCH (p)&lt;-[:DIRECTED]-(m)</example>
+    let edgeIn<'R> : EdgeType<'R> = EdgeType
+
+    /// <summary>Create a typed undirected edge reference. Produces -[:TYPE]- direction.</summary>
+    /// <example>matchRel (p -- edgeUn&lt;Knows&gt; --> m) // MATCH (p)-[:KNOWS]-(m)</example>
+    let edgeUn<'R> : EdgeType<'R> = EdgeType
 
     // Keep old operators as aliases for backwards compatibility
     /// Alias for <c>--</c> (backwards compatibility).
