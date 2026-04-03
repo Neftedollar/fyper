@@ -94,6 +94,11 @@ type CypherBuilder() =
     member _.CreateRel(_source: CypherQuery<'T>, [<ProjectionParameter>] _pattern: 'T -> EdgePattern<'A, 'R, 'B>) : CypherQuery<'T> =
         failwith "quotation only"
 
+    /// CREATE relationship with properties: createRelWith (p -- edge<ActedIn> --> m) { Roles = ["Neo"] }
+    [<CustomOperation("createRelWith", MaintainsVariableSpace = true)>]
+    member _.CreateRelWith(_source: CypherQuery<'T>, [<ProjectionParameter>] _pattern: 'T -> EdgePattern<'A, 'R, 'B>, _props: 'R) : CypherQuery<'T> =
+        failwith "quotation only"
+
     /// SET properties via record update expression: set (fun p -> { p with Age = 51 })
     [<CustomOperation("set", MaintainsVariableSpace = true)>]
     member _.Set(_source: CypherQuery<'T>, _updater: 'T -> 'T) : CypherQuery<'T> =
@@ -129,6 +134,21 @@ type CypherBuilder() =
     /// WITH clause for query chaining
     [<CustomOperation("withClause", AllowIntoPattern = true)>]
     member _.WithClause(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'R) : CypherQuery<'R> =
+        failwith "quotation only"
+
+    /// REMOVE property: removeProperty p.Email
+    [<CustomOperation("removeProperty", MaintainsVariableSpace = true)>]
+    member _.RemoveProperty(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'V) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// REMOVE label: removeLabel (p, "Admin")
+    [<CustomOperation("removeLabel", MaintainsVariableSpace = true)>]
+    member _.RemoveLabelOp(_source: CypherQuery<'T>, [<ProjectionParameter>] _selector: 'T -> 'V, _label: string) : CypherQuery<'T> =
+        failwith "quotation only"
+
+    /// CALL procedure: callProc "db.labels" []
+    [<CustomOperation("callProc", MaintainsVariableSpace = true)>]
+    member _.CallProc(_source: CypherQuery<'T>, _procedure: string, _yields: string list) : CypherQuery<'T> =
         failwith "quotation only"
 
 [<AutoOpen>]

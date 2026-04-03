@@ -107,6 +107,11 @@ module Operators =
 
     // ─── CASE expression builder (quotation-only) ───
 
+    /// <summary>EXISTS subquery check. Use in where to check if a pattern exists.</summary>
+    /// <example>where (existsRel (p -- edge&lt;ActedIn&gt; --> m))</example>
+    let existsRel (_pattern: EdgePattern<'A, 'R, 'B>) : bool =
+        failwith "quotation only"
+
     /// <summary>Cypher CASE WHEN expression.</summary>
     /// <param name="condition">Boolean condition for WHEN clause.</param>
     /// <param name="result">Value returned when condition is true (THEN).</param>
