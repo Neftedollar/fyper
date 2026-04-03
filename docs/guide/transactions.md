@@ -2,6 +2,7 @@
 layout: default
 title: Transactions
 parent: Guide
+description: "Atomic multi-query transactions in Fyper. Auto-commit, explicit transactions with rollback."
 nav_order: 5
 ---
 

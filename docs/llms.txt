@@ -1,0 +1,45 @@
+# Fyper
+
+> Type-safe Cypher query builder for F#. Write graph database queries using computation expressions with compile-time safety, parameterized values, and multi-backend support (Neo4j, Apache AGE).
+
+Fyper is an F# library that lets you write Cypher queries for graph databases using F# computation expressions. It compiles F# code into parameterized Cypher strings at query construction time, preventing injection and catching errors before they reach the database.
+
+## Key Features
+
+- Zero boilerplate schema: plain F# records are your graph nodes and relationships
+- Computation expression DSL: `cypher { for p in node<Person> do; where (p.Age > 30); select p }`
+- All values parameterized by default ($p0, $p1) — no string interpolation
+- Multi-backend: same query runs on Neo4j (Bolt) and Apache AGE (PostgreSQL)
+- Zero dependencies in core library (only FSharp.Core)
+- Cypher parser: parse Cypher strings back into typed AST
+- Sub-microsecond compilation performance
+
+## Packages
+
+- Fyper: Core query builder and compiler (FSharp.Core only)
+- Fyper.Parser: Cypher string parser (depends on Fyper)
+- Fyper.Neo4j: Neo4j Bolt driver (depends on Neo4j.Driver)
+- Fyper.Age: Apache AGE PostgreSQL driver (depends on Npgsql)
+
+## CE Operations
+
+for/where/select/selectDistinct/orderBy/orderByDesc/skip/limit/matchRel/matchPath/create/createRel/set/delete/detachDelete/merge/onMatch/onCreate/unwind/withClause
+
+## Aggregation Functions
+
+count/countDistinct/sum/avg/collect/cypherMin/cypherMax/size/caseWhen
+
+## Documentation
+
+- Getting Started: https://neftedollar.github.io/fyper/guide/getting-started.html
+- CE Operations Reference: https://neftedollar.github.io/fyper/reference/ce-operations.html
+- API Functions: https://neftedollar.github.io/fyper/reference/functions.html
+- Neo4j Driver: https://neftedollar.github.io/fyper/reference/neo4j.html
+- AGE Driver: https://neftedollar.github.io/fyper/reference/age.html
+- Architecture: https://neftedollar.github.io/fyper/internals/architecture.html
+
+## Links
+
+- GitHub: https://github.com/Neftedollar/fyper
+- NuGet: https://www.nuget.org/packages/Fyper
+- License: MIT

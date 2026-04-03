@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://neftedollar.github.io/fyper/sitemap.xml

@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Getting Started
+description: "Write your first type-safe Cypher query in F# in 5 minutes. Install Fyper, define schema, query Neo4j or Apache AGE."
 nav_order: 2
 ---
 

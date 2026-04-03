@@ -1,8 +1,29 @@
 ---
 layout: default
-title: Home
+title: "Fyper — Type-safe Cypher ORM for F#"
+description: "F# computation expression query builder for Neo4j and Apache AGE graph databases. Zero dependencies, compile-time safety, parameterized by default."
 nav_order: 1
 ---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "Fyper",
+  "description": "Type-safe Cypher query builder for F#. Computation expressions, parameterized by default, multi-backend (Neo4j, Apache AGE).",
+  "programmingLanguage": "F#",
+  "codeRepository": "https://github.com/Neftedollar/fyper",
+  "license": "https://opensource.org/licenses/MIT",
+  "author": {
+    "@type": "Person",
+    "name": "Roman Melnikov",
+    "url": "https://github.com/Neftedollar"
+  },
+  "keywords": ["F#", "Cypher", "Neo4j", "Apache AGE", "graph database", "ORM", "query builder", "computation expression", "type-safe"],
+  "operatingSystem": "Cross-platform",
+  "applicationCategory": "DeveloperApplication"
+}
+</script>
 
 # Fyper
 

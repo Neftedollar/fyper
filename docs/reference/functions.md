@@ -2,6 +2,7 @@
 layout: default
 title: Functions
 parent: Reference
+description: "Fyper.Cypher module: executeAsync, executeWriteAsync, toCypher, inTransaction, rawAsync."
 nav_order: 2
 ---
 

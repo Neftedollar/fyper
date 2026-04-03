@@ -2,6 +2,7 @@
 layout: default
 title: Apache AGE Driver
 parent: Reference
+description: "Apache AGE PostgreSQL driver for Fyper. Setup, SQL wrapping, supported features."
 nav_order: 5
 ---
 

@@ -2,6 +2,7 @@
 layout: default
 title: CE Operations
 parent: Reference
+description: "All Fyper CE operations: WHERE, SELECT, ORDER BY, matchRel, CREATE, SET, DELETE, MERGE, aggregations."
 nav_order: 1
 ---
 

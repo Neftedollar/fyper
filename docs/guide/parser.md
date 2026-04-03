@@ -2,6 +2,7 @@
 layout: default
 title: Parser
 parent: Guide
+description: "Zero-dependency Cypher parser for F#. Parse strings into typed AST, roundtrip and transform queries."
 nav_order: 6
 ---
 

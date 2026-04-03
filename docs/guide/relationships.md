@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Relationships
+description: "Graph relationships in Fyper: matchRel, OPTIONAL MATCH, variable-length paths, CREATE relationship."
 nav_order: 4
 ---
 

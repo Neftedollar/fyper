@@ -2,6 +2,7 @@
 layout: default
 title: Architecture
 parent: Internals
+description: "Fyper architecture: CE to quotation to AST to Cypher string data flow."
 nav_order: 1
 ---
 

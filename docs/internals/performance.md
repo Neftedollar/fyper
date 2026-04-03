@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Performance
+description: "Fyper benchmarks: sub-microsecond compilation, parser and mapper performance."
 nav_order: 9
 ---
 

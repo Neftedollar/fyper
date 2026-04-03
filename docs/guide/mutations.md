@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Mutations
+description: "CREATE, SET, DELETE, MERGE in Fyper CE. Mutate graph data with F# record syntax and automatic parameterization."
 nav_order: 5
 ---
 

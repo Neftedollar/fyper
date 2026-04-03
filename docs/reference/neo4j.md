@@ -2,6 +2,7 @@
 layout: default
 title: Neo4j Driver
 parent: Reference
+description: "Neo4j Bolt driver for Fyper. Connection setup, value mapping, transactions."
 nav_order: 4
 ---
 

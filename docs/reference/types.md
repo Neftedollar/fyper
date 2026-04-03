@@ -2,6 +2,7 @@
 layout: default
 title: Types
 parent: Reference
+description: "Fyper types: CypherQuery, IGraphDriver, DriverCapabilities, GraphValue, exceptions."
 nav_order: 3
 ---
 
