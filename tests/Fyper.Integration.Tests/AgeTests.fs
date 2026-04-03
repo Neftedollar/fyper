@@ -92,10 +92,13 @@ let ageIntegrationTests = testList "AGE Integration" [
     testTask "disposed driver throws" {
         let driver = createDriver ()
         do! (driver :> IAsyncDisposable).DisposeAsync()
-        Expect.throwsT<FyperConnectionException>
-            (fun () ->
-                (driver :> IGraphDriver).ExecuteReadAsync("RETURN 1", Map.empty)
-                |> Async.AwaitTask |> Async.RunSynchronously |> ignore)
-            "should throw after dispose"
+        let threw = ref false
+        try
+            let! _ = (driver :> IGraphDriver).ExecuteReadAsync("RETURN 1", Map.empty)
+            ()
+        with
+        | :? FyperConnectionException -> threw.Value <- true
+        | :? System.AggregateException as ex when (ex.InnerException :? FyperConnectionException) -> threw.Value <- true
+        Expect.isTrue threw.Value "should throw FyperConnectionException after dispose"
     }
 ]
