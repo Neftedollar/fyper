@@ -4,9 +4,15 @@ on:
   push:
     tags: ['v*']
 
+permissions:
+  id-token: write   # NuGet trusted publishing via OIDC
+  contents: write   # GitHub Release creation
+  packages: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: nuget  # must match NuGet.org trusted publisher config
 
     steps:
       - uses: actions/checkout@v4
@@ -33,11 +39,24 @@ jobs:
           dotnet pack src/Fyper.Neo4j/Fyper.Neo4j.fsproj -c Release --no-build -o nupkg
           dotnet pack src/Fyper.Age/Fyper.Age.fsproj -c Release --no-build -o nupkg
 
-      - name: Publish to NuGet
+      - name: Publish to NuGet (trusted publishing)
         run: |
           for pkg in nupkg/*.nupkg; do
-            dotnet nuget push "$pkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+            dotnet nuget push "$pkg" \
+              --source https://api.nuget.org/v3/index.json \
+              --api-key az \
+              --skip-duplicate
           done
+
+      - name: Publish symbols
+        run: |
+          for pkg in nupkg/*.snupkg; do
+            dotnet nuget push "$pkg" \
+              --source https://api.nuget.org/v3/index.json \
+              --api-key az \
+              --skip-duplicate
+          done
+        continue-on-error: true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
