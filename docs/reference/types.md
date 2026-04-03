@@ -71,3 +71,10 @@ type MyNode = { ... }
 
 type MyNode = { [<CypherName "custom_name">] FieldName: string }
 ```
+
+## See Also
+
+- [CE Operations Reference](ce-operations.md) -- operations that produce these types
+- [Functions Reference](functions.md) -- APIs that consume these types
+- [Architecture](../internals/architecture.md) -- how types flow through the system
+- [Parser](../guide/parser.md) -- parse Cypher into these types

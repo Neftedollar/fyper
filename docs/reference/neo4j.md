@@ -62,3 +62,10 @@ do! (driver :> IAsyncDisposable).DisposeAsync()
 ```
 
 Using a disposed driver throws `FyperConnectionException`.
+
+## See Also
+
+- [Getting Started](../guide/getting-started.md) -- first query tutorial
+- [Transactions](../guide/transactions.md) -- transaction API
+- [AGE Driver](age.md) -- alternative PostgreSQL backend
+- [Types Reference](types.md) -- IGraphDriver interface, DriverCapabilities

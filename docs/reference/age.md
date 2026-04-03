@@ -67,3 +67,10 @@ For testing, use the included `docker-compose.yml`:
 docker compose up -d    # Starts AGE on localhost:5432
 docker compose down     # Stop
 ```
+
+## See Also
+
+- [Getting Started](../guide/getting-started.md) -- first query tutorial
+- [Transactions](../guide/transactions.md) -- transaction API
+- [Neo4j Driver](neo4j.md) -- alternative Neo4j backend
+- [Types Reference](types.md) -- IGraphDriver, DriverCapabilities, backend feature matrix

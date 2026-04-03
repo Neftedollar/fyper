@@ -91,3 +91,10 @@ let query = cypher {
 | `Knows` | `KNOWS` | Single word stays uppercase |
 | `PartOf` | `PART_OF` | Split on PascalCase boundaries |
 | `[<Label "FRIEND_OF">] type FriendOf` | `FRIEND_OF` | Custom via attribute |
+
+## See Also
+
+- [Getting Started](getting-started.md) -- first query in 5 minutes
+- [CE Operations Reference](../reference/ce-operations.md) -- full operation table
+- [Mutations](mutations.md) -- CREATE, SET, DELETE
+- [Architecture](../internals/architecture.md) -- how edge patterns are compiled

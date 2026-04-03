@@ -283,3 +283,10 @@ let result = compile withFilter
 // WHERE (p.age > $minAge)
 // RETURN p
 ```
+
+## See Also
+
+- [CE Operations Reference](../reference/ce-operations.md) -- what the CE generates
+- [Types Reference](../reference/types.md) -- AST types the parser produces
+- [Architecture](../internals/architecture.md) -- how AST flows through the system
+- [Getting Started](getting-started.md) -- build queries with the CE instead

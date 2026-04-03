@@ -97,3 +97,10 @@ task {
 - [CE Reference](ce-reference.md) -- all query operations
 - [Mutations](mutations.md) -- CREATE, SET, DELETE
 - [Relationships](relationships.md) -- graph traversal patterns
+
+## See Also
+
+- [CE Operations Reference](../reference/ce-operations.md) -- all operations at a glance
+- [Types Reference](../reference/types.md) -- CypherQuery, IGraphDriver, exceptions
+- [Neo4j Driver](../reference/neo4j.md) -- Neo4j connection setup
+- [AGE Driver](../reference/age.md) -- Apache AGE setup
