@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Fyper.Parser</RootNamespace>
     <PackageId>Fyper.Parser</PackageId>
     <Description>Zero-dependency Cypher query parser for F#. Parses Cypher strings into Fyper's typed AST (discriminated unions). Useful for query analysis, transformation, and validation.</Description>
     <PackageTags>fsharp;cypher;parser;graph-database;neo4j;apache-age</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>

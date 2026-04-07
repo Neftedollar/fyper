@@ -46,6 +46,14 @@ module Operators =
     let ( --> ) (partial: PartialEdge<'A, 'R>) (b: 'B) : EdgePattern<'A, 'R, 'B> =
         failwith "This operator is only valid inside a cypher { } computation expression"
 
+    /// <summary>Create a typed incoming edge reference. Produces &lt;-[:TYPE]- direction.</summary>
+    /// <example>matchRel (p -- edgeIn&lt;Directed&gt; --> m) // MATCH (p)&lt;-[:DIRECTED]-(m)</example>
+    let edgeIn<'R> : EdgeType<'R> = EdgeType
+
+    /// <summary>Create a typed undirected edge reference. Produces -[:TYPE]- direction.</summary>
+    /// <example>matchRel (p -- edgeUn&lt;Knows&gt; --> m) // MATCH (p)-[:KNOWS]-(m)</example>
+    let edgeUn<'R> : EdgeType<'R> = EdgeType
+
     // Keep old operators as aliases for backwards compatibility
     /// Alias for <c>--</c> (backwards compatibility).
     let ( -< ) (a: 'A) (r: EdgeType<'R>) : PartialEdge<'A, 'R> =
@@ -98,6 +106,11 @@ module Operators =
         failwith "quotation only"
 
     // ─── CASE expression builder (quotation-only) ───
+
+    /// <summary>EXISTS subquery check. Use in where to check if a pattern exists.</summary>
+    /// <example>where (existsRel (p -- edge&lt;ActedIn&gt; --> m))</example>
+    let existsRel (_pattern: EdgePattern<'A, 'R, 'B>) : bool =
+        failwith "quotation only"
 
     /// <summary>Cypher CASE WHEN expression.</summary>
     /// <param name="condition">Boolean condition for WHEN clause.</param>

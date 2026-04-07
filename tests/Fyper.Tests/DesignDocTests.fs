@@ -10,6 +10,8 @@ open Fyper.CypherCompiler
 
 type Person = { Name: string; Age: int }
 type Movie = { Title: string; Released: int }
+type Knows = { Since: int }
+type PersonWithEmail = { Name: string; Age: int; Email: string option }
 type ActedIn = { Roles: string list }
 
 [<Tests>]
@@ -130,6 +132,32 @@ let designDocQueryTests = testList "Design Doc: Queries" [
         Expect.stringContains c "title" "m.title"
     }
 
+    test "incoming relationship with edgeIn" {
+        let query = cypher {
+            for p in node<Person> do
+            for m in node<Movie> do
+            matchRel (p -- edgeIn<ActedIn> --> m)
+            select (p.Name, m.Title)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "ACTED_IN" "relationship type"
+        Expect.stringContains c "<-[" (sprintf "incoming arrow. Got:\n%s" c)
+    }
+
+    test "undirected relationship with edgeUn" {
+        let query = cypher {
+            for p in node<Person> do
+            for q in node<Person> do
+            matchRel (p -- edgeUn<Knows> --> q)
+            select (p, q)
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "KNOWS" "relationship type"
+        // Undirected: no arrow, just -[]-
+        let hasNoArrow = not (c.Contains("->")) || not (c.Contains("<-"))
+        Expect.isTrue (c.Contains("-[") && c.Contains("]-")) "undirected brackets"
+    }
+
     test "optionalNode produces OPTIONAL MATCH" {
         let query = cypher {
             for p in node<Person> do
@@ -231,6 +259,65 @@ let designDocMutationTests = testList "Design Doc: Mutations" [
         Expect.stringContains c "MERGE" "merge"
         Expect.stringContains c "ON MATCH SET" "on match"
         Expect.stringContains c "ON CREATE SET" "on create"
+    }
+]
+
+[<Tests>]
+let designDocRemoveTests = testList "Design Doc: REMOVE & CALL" [
+
+    test "removeProperty generates REMOVE p.prop" {
+        let query = cypher {
+            for p in node<PersonWithEmail> do
+            where (p.Name = "Tom")
+            removeProperty p.Email
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "REMOVE" "remove"
+        Expect.stringContains c "email" (sprintf "property name. Got:\n%s" c)
+    }
+
+    test "removeLabel generates REMOVE p:Label" {
+        let query = cypher {
+            for p in node<Person> do
+            removeLabel p "Admin"
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "REMOVE" "remove"
+        Expect.stringContains c ":Admin" (sprintf "label. Got:\n%s" c)
+    }
+
+    test "createRelWith generates CREATE with relationship properties" {
+        let query = cypher {
+            for p in node<Person> do
+            for m in node<Movie> do
+            where (p.Name = "Tom")
+            createRelWith (p -- edge<ActedIn> --> m) { Roles = ["Neo"] }
+        }
+        let c, pars = Cypher.toCypher query
+        Expect.stringContains c "CREATE" "create"
+        Expect.stringContains c "ACTED_IN" "rel type"
+        Expect.stringContains c "roles" (sprintf "property name. Got:\n%s" c)
+    }
+
+    test "existsRel in where" {
+        let query = cypher {
+            for p in node<Person> do
+            for m in node<Movie> do
+            where (existsRel (p -- edge<ActedIn> --> m))
+            select p
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "EXISTS" (sprintf "exists. Got:\n%s" c)
+    }
+
+    test "callProc generates CALL procedure" {
+        let query = cypher {
+            for _p in node<Person> do
+            callProc "db.labels" ["label"]
+        }
+        let c, _ = Cypher.toCypher query
+        Expect.stringContains c "CALL db.labels()" (sprintf "call. Got:\n%s" c)
+        Expect.stringContains c "YIELD label" (sprintf "yield. Got:\n%s" c)
     }
 ]
 

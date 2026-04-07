@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Relationships
+description: "Graph relationships in Fyper: matchRel, OPTIONAL MATCH, variable-length paths, CREATE relationship."
 nav_order: 4
 ---
 
@@ -82,6 +83,32 @@ let query = cypher {
 // CREATE (p)-[:ACTED_IN]->(m)
 ```
 
+## Incoming & Undirected
+
+```fsharp
+// Incoming: (p)<-[:DIRECTED]-(m)
+matchRel (p -- edgeIn<Directed> --> m)
+
+// Undirected: (p)-[:KNOWS]-(q)
+matchRel (p -- edgeUn<Knows> --> q)
+```
+
+`edge<R>` = outgoing (default), `edgeIn<R>` = incoming, `edgeUn<R>` = undirected.
+
+## EXISTS Subquery
+
+Check if a relationship exists in WHERE:
+
+```fsharp
+let q = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    where (existsRel (p -- edge<ActedIn> --> m))
+    select p
+}
+// WHERE EXISTS { MATCH (p)-[]->(m) }
+```
+
 ## Naming Conventions
 
 | F# Type | Cypher Type | Convention |
@@ -90,3 +117,10 @@ let query = cypher {
 | `Knows` | `KNOWS` | Single word stays uppercase |
 | `PartOf` | `PART_OF` | Split on PascalCase boundaries |
 | `[<Label "FRIEND_OF">] type FriendOf` | `FRIEND_OF` | Custom via attribute |
+
+## See Also
+
+- [Getting Started](getting-started.md) -- first query in 5 minutes
+- [CE Operations Reference](../reference/ce-operations.md) -- full operation table
+- [Mutations](mutations.md) -- CREATE, SET, DELETE
+- [Architecture](../internals/architecture.md) -- how edge patterns are compiled

@@ -1,0 +1,170 @@
+# Fyper — Complete Reference for LLMs
+
+> Type-safe Cypher query builder for F#. Computation expressions, parameterized by default, multi-backend (Neo4j, Apache AGE).
+
+## Installation
+
+```bash
+dotnet add package Fyper              # Core query builder
+dotnet add package Fyper.Parser       # Cypher string parser
+dotnet add package Fyper.Neo4j        # Neo4j Bolt driver
+dotnet add package Fyper.Age          # Apache AGE (PostgreSQL) driver
+```
+
+## Schema Definition
+
+Plain F# records. No attributes needed by default.
+
+```fsharp
+type Person = { Name: string; Age: int }
+type Movie = { Title: string; Released: int }
+type ActedIn = { Roles: string list }
+```
+
+Conventions:
+- Type name = node label (Person -> :Person)
+- PascalCase field = camelCase property (FirstName -> firstName)
+- Relationship type = UPPER_SNAKE_CASE (ActedIn -> ACTED_IN)
+
+Optional: [<Label "CUSTOM">] and [<CypherName "custom_name">] attributes.
+
+## Query Examples
+
+### Basic Query
+```fsharp
+let query = cypher {
+    for p in node<Person> do
+    where (p.Age > 30)
+    select p
+}
+// MATCH (p:Person) WHERE p.age > $p0 RETURN p
+```
+
+### Relationship
+```fsharp
+let query = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    matchRel (p -- edge<ActedIn> --> m)
+    where (p.Age > 30)
+    select (p.Name, m.Title)
+}
+// MATCH (p:Person) MATCH (m:Movie) MATCH (p)-[:ACTED_IN]->(m)
+// WHERE p.age > $p0 RETURN p.name, m.title
+```
+
+### OPTIONAL MATCH
+```fsharp
+for m in optionalNode<Movie> do  // OPTIONAL MATCH (m:Movie)
+```
+
+### Variable-Length Paths
+```fsharp
+matchPath (p -- edge<Knows> --> q) (Between(1, 5))  // *1..5
+matchPath (p -- edge<Knows> --> q) AnyLength          // *
+matchPath (p -- edge<Knows> --> q) (Exactly 3)        // *3
+```
+
+### CREATE
+```fsharp
+create { Name = "Alice"; Age = 30 }              // CREATE (:Person {name: $p0, age: $p1})
+createRel (p -- edge<ActedIn> --> m)              // CREATE (p)-[:ACTED_IN]->(m)
+```
+
+### SET
+```fsharp
+set (fun p -> { p with Age = p.Age + 1 })        // SET p.age = (p.age + $p0)
+set (fun p -> { p with Age = 51 })                // SET p.age = $p0
+```
+
+### DELETE
+```fsharp
+delete p                                           // DELETE p
+detachDelete p                                     // DETACH DELETE p
+```
+
+### MERGE
+```fsharp
+merge { Name = "Tom"; Age = 0 }
+onMatch (fun p -> { p with Age = 50 })
+onCreate (fun p -> { p with Age = 25 })
+// MERGE (:Person {...}) ON MATCH SET p.age = $p0 ON CREATE SET p.age = $p1
+```
+
+### Aggregation
+```fsharp
+select (count())                    // count(*)
+select (sum(p.Age))                 // sum(p.age)
+select (avg(p.Age))                 // avg(p.age)
+select (collect(p.Name))            // collect(p.name)
+select (cypherMin(p.Age))           // min(p.age)
+select (cypherMax(p.Age))           // max(p.age)
+selectDistinct p.Name               // RETURN DISTINCT p.name
+```
+
+### CASE, UNWIND, WITH
+```fsharp
+select (caseWhen (p.Age > 18) p.Name "minor")    // CASE WHEN ... THEN ... ELSE ... END
+unwind names "name"                                // UNWIND $p0 AS name
+withClause p                                       // WITH p
+```
+
+## Execution
+
+```fsharp
+// Inspect without executing
+let cypherString, params = query |> Cypher.toCypher
+
+// Execute read query
+let! results = query |> Cypher.executeAsync driver
+
+// Execute write query
+let! count = mutation |> Cypher.executeWriteAsync driver
+
+// Transaction
+let! result = Cypher.inTransaction driver (fun tx -> task {
+    let! _ = q1 |> Cypher.executeWriteAsync tx
+    let! _ = q2 |> Cypher.executeWriteAsync tx
+    return 2
+})
+
+// Raw Cypher
+let! records = Cypher.rawAsync driver "MATCH (n) RETURN count(n)" Map.empty
+```
+
+## Neo4j Driver Setup
+```fsharp
+open Fyper.Neo4j
+let driver = new Neo4jDriver(
+    Neo4j.Driver.GraphDatabase.Driver("bolt://localhost:7687",
+        Neo4j.Driver.AuthTokens.Basic("neo4j", "password")))
+```
+
+## AGE Driver Setup
+```fsharp
+open Fyper.Age
+open Npgsql
+let ds = NpgsqlDataSource.Create("Host=localhost;Database=mydb;Username=user;Password=pass")
+let driver = new AgeDriver(ds, graphName = "my_graph")
+```
+
+## Parser
+```fsharp
+open Fyper.Parser
+let parsed = CypherParser.parse "MATCH (p:Person) WHERE p.age > 30 RETURN p"
+let compiled = Fyper.CypherCompiler.compile parsed
+```
+
+## Backend Capabilities
+
+Neo4j: all features supported.
+AGE: MATCH, WHERE, RETURN, CREATE, DELETE, SET, ORDER BY, SKIP, LIMIT, variable-length paths. NOT supported: OPTIONAL MATCH, MERGE, UNWIND, CASE, CALL.
+
+Unsupported features rejected at query construction time with FyperUnsupportedFeatureException.
+
+## Exceptions
+
+FyperConnectionException: connection/auth failure
+FyperQueryException: Cypher syntax error (includes query + params)
+FyperMappingException: result type mismatch
+FyperUnsupportedFeatureException: backend doesn't support feature

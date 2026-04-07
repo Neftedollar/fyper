@@ -1,46 +1,61 @@
-name: Release to NuGet
+name: Publish NuGet
 
 on:
+  workflow_dispatch:
   push:
     tags: ['v*']
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: 10.0.x
 
       - name: Build
         run: |
-          dotnet build src/Fyper/Fyper.fsproj -c Release
-          dotnet build src/Fyper.Parser/Fyper.Parser.fsproj -c Release
-          dotnet build src/Fyper.Neo4j/Fyper.Neo4j.fsproj -c Release
-          dotnet build src/Fyper.Age/Fyper.Age.fsproj -c Release
+          dotnet build src/Fyper/Fyper.fsproj -c Release -v minimal
+          dotnet build src/Fyper.Parser/Fyper.Parser.fsproj -c Release -v minimal
+          dotnet build src/Fyper.Neo4j/Fyper.Neo4j.fsproj -c Release -v minimal
+          dotnet build src/Fyper.Age/Fyper.Age.fsproj -c Release -v minimal
 
       - name: Test
         run: dotnet test tests/Fyper.Tests/Fyper.Tests.fsproj -c Release
 
       - name: Pack
         run: |
-          dotnet pack src/Fyper/Fyper.fsproj -c Release --no-build -o nupkg
-          dotnet pack src/Fyper.Parser/Fyper.Parser.fsproj -c Release --no-build -o nupkg
-          dotnet pack src/Fyper.Neo4j/Fyper.Neo4j.fsproj -c Release --no-build -o nupkg
-          dotnet pack src/Fyper.Age/Fyper.Age.fsproj -c Release --no-build -o nupkg
+          dotnet pack src/Fyper/Fyper.fsproj -c Release --no-build -o artifacts
+          dotnet pack src/Fyper.Parser/Fyper.Parser.fsproj -c Release --no-build -o artifacts
+          dotnet pack src/Fyper.Neo4j/Fyper.Neo4j.fsproj -c Release --no-build -o artifacts
+          dotnet pack src/Fyper.Age/Fyper.Age.fsproj -c Release --no-build -o artifacts
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: nuget-packages
+          path: artifacts/*.nupkg
+          if-no-files-found: error
+
+      - name: NuGet login with trusted publishing
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: Neftedollar
 
       - name: Publish to NuGet
-        run: |
-          for pkg in nupkg/*.nupkg; do
-            dotnet nuget push "$pkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-          done
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: nupkg/*
+          files: artifacts/*
           generate_release_notes: true

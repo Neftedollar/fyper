@@ -168,6 +168,23 @@ module QueryTranslator =
             let relPattern = compileEdgePattern patternLambda state'.VarTypes
             { state' with Clauses = state'.Clauses @ [Create [relPattern]] }
 
+        // CreateRelWith(builder, source, projectionLambda, propsRecord) → CREATE rel with properties
+        | QP.Call(Some _builder, mi, [source; patternLambda; propsExpr]) when isMethodNamed "CreateRelWith" mi ->
+            let state' = walkExpr state source
+            let relPattern = compileEdgePattern patternLambda state'.VarTypes
+            let exprState = ExprCompiler.newState()
+            exprState.ParamIndex <- state'.ParamCounter
+            let relProps = extractRecordProps exprState propsExpr
+            let withProps =
+                match relPattern with
+                | RelPattern(from, alias, relType, _, dir, pathLen, to') ->
+                    RelPattern(from, alias, relType, relProps, dir, pathLen, to')
+                | other -> other
+            { state' with
+                Clauses = state'.Clauses @ [Create [withProps]]
+                Parameters = Map.fold (fun acc k v -> Map.add k v acc) state'.Parameters exprState.Parameters
+                ParamCounter = exprState.ParamIndex }
+
         // Set(builder, source, updaterLambda) → SET property = value
         | QP.Call(Some _builder, mi, [source; updaterLambda]) when isMethodNamed "Set" mi ->
             let state' = walkExpr state source
@@ -238,6 +255,24 @@ module QueryTranslator =
             let state' = walkExpr state source
             let returnItems = compileProjection projectionLambda
             { state' with Clauses = state'.Clauses @ [With(returnItems, false)] }
+
+        // RemoveProperty(builder, source, selectorLambda) → REMOVE owner.prop
+        | QP.Call(Some _builder, mi, [source; selectorLambda]) when isMethodNamed "RemoveProperty" mi ->
+            let state' = walkExpr state source
+            let items = extractRemovePropertyItems selectorLambda
+            { state' with Clauses = state'.Clauses @ [Remove items] }
+
+        // RemoveLabelOp(builder, source, selectorLambda, label) → REMOVE owner:Label
+        | QP.Call(Some _builder, mi, [source; selectorLambda; QP.Value(label, _)]) when isMethodNamed "RemoveLabelOp" mi ->
+            let state' = walkExpr state source
+            let owner = extractOwnerFromProjection selectorLambda
+            { state' with Clauses = state'.Clauses @ [Remove [RemoveLabel(owner, string label)]] }
+
+        // CallProc(builder, source, procedure, yields) → CALL proc() YIELD ...
+        | QP.Call(Some _builder, mi, [source; QP.Value(proc, _); yieldExpr]) when isMethodNamed "CallProc" mi ->
+            let state' = walkExpr state source
+            let yields = extractStringList yieldExpr
+            { state' with Clauses = state'.Clauses @ [Call(string proc, [], yields)] }
 
         // Return(builder, returnExpr)
         | QP.Call(Some _builder, mi, [returnExpr]) when isMethodNamed "Return" mi ->
@@ -460,6 +495,49 @@ module QueryTranslator =
         | QP.Let(_, _, body) -> isUnchangedField propName body
         | _ -> false
 
+    /// Extract record field values as a Map<string, Expr> for relationship properties
+    and extractRecordProps (exprState: ExprCompiler.ExprCompileState) (expr: Microsoft.FSharp.Quotations.Expr) : Map<string, Expr> =
+        let rec find (e: Microsoft.FSharp.Quotations.Expr) =
+            match e with
+            | QP.NewRecord(recordType, fieldValues) ->
+                let fields = Microsoft.FSharp.Reflection.FSharpType.GetRecordFields(recordType)
+                Array.zip fields (fieldValues |> Array.ofList)
+                |> Array.map (fun (fi, v) ->
+                    let cypherName = Schema.toCypherName fi.Name
+                    let compiled = ExprCompiler.compile exprState v
+                    cypherName, compiled)
+                |> Map.ofArray
+            | QP.Let(_, _, body) -> find body
+            | _ -> Map.empty
+        find expr
+
+    /// Extract REMOVE property items from a projection lambda (removeProperty p.Email)
+    and extractRemovePropertyItems (lambda: Microsoft.FSharp.Quotations.Expr) : RemoveItem list =
+        match lambda with
+        | QP.Lambda(_, body) -> extractRemovePropertyItems body
+        | QP.Let(_, _, body) -> extractRemovePropertyItems body
+        | QP.PropertyGet(Some(QP.Var v), prop, []) ->
+            [RemoveProperty(v.Name, Schema.toCypherName prop.Name)]
+        | _ -> failwithf "Cannot extract REMOVE property from: %A" lambda
+
+    /// Extract owner variable name from a projection lambda
+    and extractOwnerFromProjection (lambda: Microsoft.FSharp.Quotations.Expr) : string =
+        match lambda with
+        | QP.Lambda(_, body) -> extractOwnerFromProjection body
+        | QP.Let(_, _, body) -> extractOwnerFromProjection body
+        | QP.Var v -> v.Name
+        | QP.PropertyGet(Some(QP.Var v), _, []) -> v.Name
+        | _ -> "n"
+
+    /// Extract a string list from a quotation expression (for YIELD fields)
+    and extractStringList (expr: Microsoft.FSharp.Quotations.Expr) : string list =
+        match expr with
+        | QP.NewUnionCase(_, [QP.Value(head, _); tail]) ->
+            string head :: extractStringList tail
+        | QP.NewUnionCase(_, []) -> []
+        | QP.Value(v, _) when v <> null -> [string v]
+        | _ -> []
+
     /// Extract a PathLength value from a quotation expression
     and extractPathLength (expr: Microsoft.FSharp.Quotations.Expr) : PathLength =
         match expr with
@@ -508,8 +586,29 @@ module QueryTranslator =
             | QP.Lambda(_, body) -> findRelType body
             | _ -> None
 
+        let rec findDirection (e: Microsoft.FSharp.Quotations.Expr) : Direction =
+            match e with
+            // edgeIn<T> / edgeUn<T> as property or call
+            | QP.PropertyGet(None, pi, []) when pi.Name = "edgeIn" -> Incoming
+            | QP.PropertyGet(None, pi, []) when pi.Name = "edgeUn" -> Undirected
+            | QP.Call(None, mi, _) when mi.Name = "edgeIn" -> Incoming
+            | QP.Call(None, mi, _) when mi.Name = "edgeUn" -> Undirected
+            | QP.Call(_, _, args) ->
+                args |> List.tryPick (fun a ->
+                    match findDirection a with
+                    | Outgoing -> None
+                    | d -> Some d)
+                |> Option.defaultValue Outgoing
+            | QP.Let(_, v, body) ->
+                match findDirection v with
+                | Outgoing -> findDirection body
+                | d -> d
+            | QP.Lambda(_, body) -> findDirection body
+            | _ -> Outgoing
+
         let vars = findVars expr |> List.distinct
         let relType = findRelType expr
+        let direction = findDirection expr
 
         match vars with
         | [fromName; toName] | [_; fromName; toName] ->
@@ -518,7 +617,7 @@ module QueryTranslator =
             RelPattern(
                 NodePattern(fromName, fromLabel, Map.empty),
                 None, relType, Map.empty,
-                Outgoing, None,
+                direction, None,
                 NodePattern(toName, toLabel, Map.empty))
         | _ ->
             failwithf "Could not parse edge pattern expression: found vars %A" vars

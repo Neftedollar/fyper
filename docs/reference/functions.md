@@ -2,6 +2,7 @@
 layout: default
 title: Functions
 parent: Reference
+description: "Fyper.Cypher module: executeAsync, executeWriteAsync, toCypher, inTransaction, rawAsync."
 nav_order: 2
 ---
 
@@ -72,3 +73,10 @@ val toDebugString : CypherQuery<'T> -> string
 
 printfn "%s" (Cypher.toDebugString query)
 ```
+
+## See Also
+
+- [CE Operations Reference](ce-operations.md) -- all CE operations
+- [Transactions Guide](../guide/transactions.md) -- inTransaction usage examples
+- [Types Reference](types.md) -- IGraphDriver, IGraphTransaction interfaces
+- [Neo4j Driver](neo4j.md) / [AGE Driver](age.md) -- driver-specific setup

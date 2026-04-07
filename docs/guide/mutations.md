@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Mutations
+description: "CREATE, SET, DELETE, MERGE in Fyper CE. Mutate graph data with F# record syntax and automatic parameterization."
 nav_order: 5
 ---
 
@@ -111,3 +112,34 @@ task {
     // Both committed or both rolled back
 }
 ```
+
+## CREATE Relationship with Properties
+
+```fsharp
+let query = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    where (p.Name = "Tom")
+    createRelWith (p -- edge<ActedIn> --> m) { Roles = ["Neo"] }
+}
+// CREATE (p)-[:ACTED_IN {roles: $p0}]->(m)
+```
+
+## REMOVE
+
+```fsharp
+// Remove a property
+let q = cypher { for p in node<Person> do; removeProperty p.Name }
+// REMOVE p.name
+
+// Remove a label
+let q = cypher { for p in node<Person> do; removeLabel p "Admin" }
+// REMOVE p:Admin
+```
+
+## See Also
+
+- [Transactions](transactions.md) -- atomic multi-query operations
+- [Relationships](relationships.md) -- createRel for relationship creation
+- [CE Operations Reference](../reference/ce-operations.md) -- full operation table
+- [Functions Reference](../reference/functions.md) -- executeWriteAsync, inTransaction

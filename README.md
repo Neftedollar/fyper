@@ -230,6 +230,36 @@ let q = cypher {
     select p
 }
 
+// REMOVE property / label
+let q = cypher { for p in node<Person> do; removeProperty p.Name }
+let q = cypher { for p in node<Person> do; removeLabel p "Admin" }
+
+// CREATE relationship with properties
+let q = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    createRelWith (p -- edge<ActedIn> --> m) { Roles = ["Neo"] }
+}
+
+// EXISTS subquery in WHERE
+let q = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    where (existsRel (p -- edge<ActedIn> --> m))
+    select p
+}
+
+// CALL procedure
+let q = cypher { for _p in node<Person> do; callProc "db.labels" ["label"] }
+
+// Incoming / undirected relationships
+let q = cypher {
+    for p in node<Person> do
+    for m in node<Movie> do
+    matchRel (p -- edgeIn<ActedIn> --> m)   // (p)<-[:ACTED_IN]-(m)
+    select p
+}
+
 // Raw Cypher (escape hatch)
 let! records = Cypher.rawAsync driver "MATCH (n) RETURN count(n) AS cnt" Map.empty
 ```
@@ -306,6 +336,11 @@ Benchmarked on Apple M1 Pro, .NET 10.0:
 | ResultMapper: tuple | 790 ns | 664 B |
 
 Run benchmarks: `dotnet run --project tests/Fyper.Benchmarks/ -c Release`
+
+## Known Issues & Limitations
+
+- **AGE dialect limitations** -- Apache AGE does not support OPTIONAL MATCH, MERGE, UNWIND, CASE. Fyper rejects these at query construction time.
+- **Multi-field SET** -- `set (fun p -> { p with Name = "X"; Age = 30 })` changes both fields. Only the changed fields generate SET clauses, but both changes are in one SET (no separate SET per field).
 
 ## Project Structure
 

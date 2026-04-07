@@ -2,6 +2,7 @@
 layout: default
 title: Transactions
 parent: Guide
+description: "Atomic multi-query transactions in Fyper. Auto-commit, explicit transactions with rollback."
 nav_order: 5
 ---
 
@@ -64,3 +65,10 @@ task {
         do! tx.DisposeAsync()
 }
 ```
+
+## See Also
+
+- [Mutations](mutations.md) -- CREATE, SET, DELETE, MERGE
+- [Functions Reference](../reference/functions.md) -- inTransaction API details
+- [Neo4j Driver](../reference/neo4j.md) -- Neo4j transaction support
+- [AGE Driver](../reference/age.md) -- PostgreSQL transaction support

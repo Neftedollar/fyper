@@ -2,6 +2,7 @@
 layout: default
 title: Neo4j Driver
 parent: Reference
+description: "Neo4j Bolt driver for Fyper. Connection setup, value mapping, transactions."
 nav_order: 4
 ---
 
@@ -61,3 +62,10 @@ do! (driver :> IAsyncDisposable).DisposeAsync()
 ```
 
 Using a disposed driver throws `FyperConnectionException`.
+
+## See Also
+
+- [Getting Started](../guide/getting-started.md) -- first query tutorial
+- [Transactions](../guide/transactions.md) -- transaction API
+- [AGE Driver](age.md) -- alternative PostgreSQL backend
+- [Types Reference](types.md) -- IGraphDriver interface, DriverCapabilities

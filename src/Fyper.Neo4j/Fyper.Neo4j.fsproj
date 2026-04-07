@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Fyper.Neo4j</RootNamespace>
     <PackageId>Fyper.Neo4j</PackageId>
     <Description>Neo4j Bolt driver for Fyper — the type-safe F# Cypher query builder. Connects Fyper queries to Neo4j databases via the official Neo4j.Driver.</Description>
     <PackageTags>fsharp;cypher;neo4j;graph-database;bolt</PackageTags>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Neo4j.Driver" Version="5.*" />
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo4j.Driver" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>

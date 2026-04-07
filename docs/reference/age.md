@@ -2,6 +2,7 @@
 layout: default
 title: Apache AGE Driver
 parent: Reference
+description: "Apache AGE PostgreSQL driver for Fyper. Setup, SQL wrapping, supported features."
 nav_order: 5
 ---
 
@@ -66,3 +67,10 @@ For testing, use the included `docker-compose.yml`:
 docker compose up -d    # Starts AGE on localhost:5432
 docker compose down     # Stop
 ```
+
+## See Also
+
+- [Getting Started](../guide/getting-started.md) -- first query tutorial
+- [Transactions](../guide/transactions.md) -- transaction API
+- [Neo4j Driver](neo4j.md) -- alternative Neo4j backend
+- [Types Reference](types.md) -- IGraphDriver, DriverCapabilities, backend feature matrix

@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Performance
+description: "Fyper benchmarks: sub-microsecond compilation, parser and mapper performance."
 nav_order: 9
 ---
 
@@ -55,3 +56,9 @@ For specific benchmarks:
 dotnet run --project tests/Fyper.Benchmarks/ -c Release -- --filter "*Compiler*"
 dotnet run --project tests/Fyper.Benchmarks/ -c Release -- --filter "*Parser*"
 ```
+
+## See Also
+
+- [Architecture](architecture.md) -- what each benchmark measures
+- [CE Operations Reference](../reference/ce-operations.md) -- the operations being benchmarked
+- [Parser](../guide/parser.md) -- parser usage and grammar

@@ -18,6 +18,14 @@ module ExprCompiler =
         state.Parameters <- state.Parameters |> Map.add name value
         name
 
+    /// Extract variable names from an expression tree
+    let rec extractVarsFromExpr (expr: Microsoft.FSharp.Quotations.Expr) : string list =
+        match expr with
+        | Microsoft.FSharp.Quotations.Patterns.Var v -> [v.Name]
+        | Microsoft.FSharp.Quotations.Patterns.Call(_, _, args) -> args |> List.collect extractVarsFromExpr
+        | Microsoft.FSharp.Quotations.Patterns.Let(_, _, body) -> extractVarsFromExpr body
+        | _ -> []
+
     /// Compile an F# quotation Expr into a Cypher AST Expr.
     let rec compile (state: ExprCompileState) (quotationExpr: Microsoft.FSharp.Quotations.Expr) : Ast.Expr =
         match quotationExpr with
@@ -133,10 +141,39 @@ module ExprCompiler =
             when mi.Name = "cypherMax" && mi.DeclaringType.Name = "Operators" ->
             FuncCall("max", [compile state arg])
 
+        // existsRel(pattern) → EXISTS { MATCH pattern }
+        | Microsoft.FSharp.Quotations.Patterns.Call(None, mi, [patternExpr])
+            when mi.Name = "existsRel" && mi.DeclaringType.Name = "Operators" ->
+            // Build a MATCH clause from the edge pattern variables
+            let vars = extractVarsFromExpr patternExpr
+            match vars with
+            | [a; b] -> ExistsSubquery [Match([RelPattern(
+                            NodePattern(a, None, Map.empty),
+                            None, None, Map.empty,
+                            Outgoing, None,
+                            NodePattern(b, None, Map.empty))], false)]
+            | _ -> UnaryOp(Exists, compile state patternExpr)
+
         // CASE WHEN: caseWhen condition result elseResult
         | Microsoft.FSharp.Quotations.Patterns.Call(None, mi, [cond; result; elseResult])
             when mi.Name = "caseWhen" && mi.DeclaringType.Name = "Operators" ->
             CaseExpr(None, [(compile state cond, compile state result)], Some (compile state elseResult))
+
+        // F# list construction: [a; b; c] → ListExpr
+        | Microsoft.FSharp.Quotations.Patterns.NewUnionCase(uci, [head; tail])
+            when uci.DeclaringType.IsGenericType
+              && uci.DeclaringType.GetGenericTypeDefinition() = typedefof<list<_>>
+              && uci.Name = "Cons" ->
+            let headExpr = compile state head
+            match compile state tail with
+            | ListExpr items -> ListExpr (headExpr :: items)
+            | _ -> ListExpr [headExpr]
+
+        | Microsoft.FSharp.Quotations.Patterns.NewUnionCase(uci, [])
+            when uci.DeclaringType.IsGenericType
+              && uci.DeclaringType.GetGenericTypeDefinition() = typedefof<list<_>>
+              && uci.Name = "Empty" ->
+            ListExpr []
 
         // Variable reference
         | Microsoft.FSharp.Quotations.Patterns.Var v -> Variable v.Name

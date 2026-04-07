@@ -2,6 +2,7 @@
 layout: default
 title: Architecture
 parent: Internals
+description: "Fyper architecture: CE to quotation to AST to Cypher string data flow."
 nav_order: 1
 ---
 
@@ -168,3 +169,10 @@ Fyper ships as multiple NuGet packages:
 | `Fyper.Age` | Fyper, Npgsql 8.x | Apache AGE (PostgreSQL) driver |
 
 All packages target `.NET 10.0`.
+
+## See Also
+
+- [CE Operations Reference](../reference/ce-operations.md) -- the user-facing DSL
+- [Types Reference](../reference/types.md) -- AST types
+- [Performance](performance.md) -- benchmark results
+- [Parser](../guide/parser.md) -- reverse flow: Cypher string to AST

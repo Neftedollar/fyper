@@ -1,9 +1,13 @@
 title: Fyper
-description: Type-safe Cypher queries in F#
+description: "Type-safe Cypher query builder for F#. Write graph database queries using computation expressions with compile-time safety, parameterized values, and multi-backend support for Neo4j and Apache AGE. Zero dependencies."
 baseurl: /fyper
+url: https://neftedollar.github.io
 theme: jekyll-theme-cayman
+
 plugins:
   - jekyll-relative-links
+  - jekyll-sitemap
+  - jekyll-seo-tag
 
 relative_links:
   enabled: true
@@ -17,3 +21,13 @@ defaults:
 
 exclude:
   - DESIGN.md
+  - CODE_REVIEW.md
+
+twitter:
+  card: summary
+
+social:
+  name: Fyper
+  links:
+    - https://github.com/Neftedollar/fyper
+    - https://www.nuget.org/packages/Fyper

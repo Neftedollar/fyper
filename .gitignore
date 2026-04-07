@@ -69,6 +69,7 @@ Thumbs.db
 
 # Specify / SpecKit
 .specify/
+specs/
 
 # Augment Code
 .augment/
