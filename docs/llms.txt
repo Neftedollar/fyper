@@ -35,12 +35,12 @@ count/countDistinct/sum/avg/collect/cypherMin/cypherMax/size/caseWhen/existsRel
 
 ## Documentation
 
-- Getting Started: https://neftedollar.github.io/fyper/guide/getting-started.html
-- CE Operations Reference: https://neftedollar.github.io/fyper/reference/ce-operations.html
-- API Functions: https://neftedollar.github.io/fyper/reference/functions.html
-- Neo4j Driver: https://neftedollar.github.io/fyper/reference/neo4j.html
-- AGE Driver: https://neftedollar.github.io/fyper/reference/age.html
-- Architecture: https://neftedollar.github.io/fyper/internals/architecture.html
+- Getting Started: https://neftedollar.com/fyper/guide/getting-started.html
+- CE Operations Reference: https://neftedollar.com/fyper/reference/ce-operations.html
+- API Functions: https://neftedollar.com/fyper/reference/functions.html
+- Neo4j Driver: https://neftedollar.com/fyper/reference/neo4j.html
+- AGE Driver: https://neftedollar.com/fyper/reference/age.html
+- Architecture: https://neftedollar.com/fyper/internals/architecture.html
 
 ## Links
 

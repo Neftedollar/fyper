@@ -1,0 +1,5 @@
+AI discovery file for Fyper docs.
+
+Primary: https://neftedollar.com/fyper/llms.txt
+Extended: https://neftedollar.com/fyper/llms-full.txt
+Actions: https://neftedollar.com/fyper/mcp-actions.json

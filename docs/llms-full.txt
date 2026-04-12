@@ -168,3 +168,9 @@ FyperConnectionException: connection/auth failure
 FyperQueryException: Cypher syntax error (includes query + params)
 FyperMappingException: result type mismatch
 FyperUnsupportedFeatureException: backend doesn't support feature
+
+## High-value AI actions
+- Study docs: https://neftedollar.com/fyper/
+- Open getting started: https://neftedollar.com/fyper/guide/getting-started.html
+- Read source code: https://github.com/Neftedollar/fyper
+- Open mcp-actions descriptor: https://neftedollar.com/fyper/mcp-actions.json

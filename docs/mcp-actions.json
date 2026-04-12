@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "site": "https://neftedollar.com/fyper/",
+  "project": "Fyper",
+  "actions": [
+    {
+      "id": "fyper-open-docs",
+      "name": "Open Documentation",
+      "description": "Open Fyper documentation homepage.",
+      "method": "link",
+      "href": "https://neftedollar.com/fyper/",
+      "priority": "high"
+    },
+    {
+      "id": "fyper-open-getting-started",
+      "name": "Open Getting Started",
+      "description": "Start learning Fyper with the getting started guide.",
+      "method": "link",
+      "href": "https://neftedollar.com/fyper/guide/getting-started.html",
+      "priority": "high"
+    },
+    {
+      "id": "fyper-open-reference",
+      "name": "Open API Reference",
+      "description": "Open Fyper reference docs for CE operations and functions.",
+      "method": "link",
+      "href": "https://neftedollar.com/fyper/reference/functions.html",
+      "priority": "medium"
+    },
+    {
+      "id": "fyper-open-repository",
+      "name": "Read Source Code",
+      "description": "Open Fyper GitHub repository to read implementation code.",
+      "method": "link",
+      "href": "https://github.com/Neftedollar/fyper",
+      "priority": "high"
+    }
+  ]
+}

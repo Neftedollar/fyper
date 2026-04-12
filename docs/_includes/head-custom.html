@@ -1,0 +1,46 @@
+<link rel="mcp-actions" href="{{ '/mcp-actions.json' | relative_url }}">
+<link rel="alternate" type="text/plain" href="{{ '/llms.txt' | relative_url }}" title="LLMs.txt">
+<script>
+(function () {
+  if (typeof navigator === 'undefined') return;
+  var mcp = navigator.mcpActions;
+  if (!mcp || typeof mcp.register !== 'function') return;
+
+  function register(action) {
+    try { mcp.register(action); } catch (_) {}
+  }
+
+  register({
+    id: 'fyper-open-docs',
+    name: 'Open Fyper Docs',
+    description: 'Open Fyper documentation homepage.',
+    parameters: { type: 'object', properties: {} },
+    handler: async function () {
+      window.location.assign('https://neftedollar.com/fyper/');
+      return { success: true, url: 'https://neftedollar.com/fyper/' };
+    }
+  });
+
+  register({
+    id: 'fyper-open-getting-started',
+    name: 'Open Getting Started',
+    description: 'Open Fyper getting started guide.',
+    parameters: { type: 'object', properties: {} },
+    handler: async function () {
+      window.location.assign('https://neftedollar.com/fyper/guide/getting-started.html');
+      return { success: true, url: 'https://neftedollar.com/fyper/guide/getting-started.html' };
+    }
+  });
+
+  register({
+    id: 'fyper-open-repository',
+    name: 'Read Fyper Source Code',
+    description: 'Open Fyper GitHub repository to explore implementation details.',
+    parameters: { type: 'object', properties: {} },
+    handler: async function () {
+      window.location.assign('https://github.com/Neftedollar/fyper');
+      return { success: true, url: 'https://github.com/Neftedollar/fyper' };
+    }
+  });
+})();
+</script>
