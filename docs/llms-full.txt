@@ -2,6 +2,10 @@
 
 > Type-safe Cypher query builder for F#. Computation expressions, parameterized by default, multi-backend (Neo4j, Apache AGE).
 
+## Author
+
+- [Roman Melnikov (Neftedollar)](https://neftedollar.com/)
+
 ## Installation
 
 ```bash

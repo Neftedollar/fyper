@@ -4,6 +4,10 @@
 
 Fyper is an F# library that lets you write Cypher queries for graph databases using F# computation expressions. It compiles F# code into parameterized Cypher strings at query construction time, preventing injection and catching errors before they reach the database.
 
+## Author
+
+- [Roman Melnikov (Neftedollar)](https://neftedollar.com/)
+
 ## Key Features
 
 - Zero boilerplate schema: plain F# records are your graph nodes and relationships
